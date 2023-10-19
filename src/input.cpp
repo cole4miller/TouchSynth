@@ -24,43 +24,20 @@ void KnobIn::rotate(Display *display, Encoder knob)
     }
     if (diff != 0)
     {
-        if (display->mode == 1)
-        {
-            display->vscale1 = knobRange(display->vscale1 + diff, 0, 10);
-        }
-        else if (display->mode == 2)
-        {
-            display->vscale2 = knobRange(display->vscale2 + diff, 0, 10);
-        }
-        else if (display->mode == 3)
-        {
-            display->hscale = knobRange(display->hscale + diff, 0, 13);
-        }
-        else if (display->mode == 4)
-        {
-            display->runStop = knobRange(display->runStop + diff, 0, 1);
-        }
-        else if (display->mode == 5)
-        {
-            display->trigger = knobRange(display->trigger + diff, 0, 60);
-        }
-        else if (display->mode == 6)
-        {
-            display->triggerChannel = knobRange(display->triggerChannel + diff, 0, 1);
-        }
+        display->menu = knobRange(display->menu + diff, 0, 3);
         oldPosition = newPosition;
     }
 }
 
 void KnobIn::modeChange(Display *display)
 {
-    if (display->mode == 6)
+    if (display->menu == 6)
     {
-        display->mode = 1;
+        display->menu = 1;
     }
     else
     {
-        display->mode++;
+        display->menu++;
     }
     delayMicroseconds(20);
 }

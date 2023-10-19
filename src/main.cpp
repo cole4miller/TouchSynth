@@ -3,6 +3,7 @@
 #include "display.h"
 #include "sampler.h"
 #include "input.h"
+#include "touch.h"
 #include "XPT2046_Touchscreen.h"
 
 const int channel_1_pin = A4;
@@ -22,6 +23,7 @@ Display *display;
 
 #define CS_PIN  8
 XPT2046_Touchscreen ts(CS_PIN);
+Touch touch;
 
 Encoder knob(knob_in_1, knob_in_2);
 KnobIn knob_in;
@@ -72,10 +74,7 @@ void loop()
     
     if (DMA_completed())
     {
-        if (display->runStop == 0) 
-        {
-            processBuffers(channel_1_data, channel_2_data);
-        }
+        processBuffers(channel_1_data, channel_2_data);
 
         // temporary: convert from mV to full 16 bit range (6V = )
         
@@ -91,10 +90,17 @@ void loop()
     
     if (ts.touched()) {
         TS_Point p = ts.getPoint();
+        display->xin = p.x;
+        display->yin = p.y;
+        touch.xin = p.x;
+        touch.yin = p.y;
+        touch.processTouch(display);
+        
         Serial.print("x = ");
         Serial.print(p.x);
         Serial.print(", y = ");
         Serial.print(p.y);
+
     }
 
     currentButtonState = digitalRead(knob_push);

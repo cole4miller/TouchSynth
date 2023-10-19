@@ -13,177 +13,10 @@ Display::Display(int16_t *data1, int16_t *data2, ILI9341_t3n *screen)
     tft->setRotation(1);
 }
 
-int Display::newTrigger()
-{
-    int scaling, start;
-    
-    // calculates vertical position of trigger. Lower value is higher on screen
-    int trig = 108.0 - (((trigger - 30) / 30.0) * 104.0);
-
-    // "step" calculates number of samples per pixel horizontally in wave display 
-    double step = (Hdiv[hscale] * SAMPLE_RATE / 38.0);
-
-    if (triggerChannel == 0)
-    {
-        scaling = vscale1;
-    }
-    else
-    {
-        scaling = vscale2;
-    }
-
-    if (step >= 0.5)
-    {
-        // ensures there are enough samples to fill screen
-        start = 304.0 * step;
-        trigPoint = start;
-    }
-    else
-    {
-        // ensures there are enough samples to fill screen
-        start = 80;
-        trigPoint = start;
-    }
-  
-    /*
-    // increases trigPoint counter until a sample is reached that crosses trigger threshold
-    // checks for samples ahead and behind for better stability
-    while (!(((108.0 - (104.0 * (data[triggerChannel][trigPoint + 4] / (1000.0 * 4.0 * Vdiv[scaling])))) <= trig) &&
-            ((108.0 - (104.0 * (data[triggerChannel][trigPoint] / (1000.0 * 4.0 * Vdiv[scaling])))) <= trig) && 
-            ((108.0 - (104.0 * (data[triggerChannel][trigPoint - 2] / (1000.0 * 4.0 * Vdiv[scaling])))) > trig) &&
-            ((108.0 - (104.0 * (data[triggerChannel][trigPoint - 4] / (1000.0 * 4.0 * Vdiv[scaling])))) > trig)) && 
-            !(trigPoint > 31000)) 
-    {
-        trigPoint++;
-    }
-    */
-
-    // multiply Vdiv * 4 to match amplitude for 50 ohm termination
-    while (!(((108.0 + (104.0 * (data[triggerChannel][trigPoint] / (1000.0 * Vdiv[scaling])))) <= trig) && 
-            ((108.0 + (104.0 * (data[triggerChannel][trigPoint - 4] / (1000.0 * Vdiv[scaling])))) > trig)) && 
-            !(trigPoint > 31000)) 
-    {
-        trigPoint++;
-    }
-
-    if (trigPoint < 30000)
-    {
-        return trigPoint;
-    }
-    else
-    {
-        // returns starting point if trigger threshold not crossed
-        return start;
-    }
-}
-
-int Display::vertBoundCheck(int vertin)
-{
-    if (vertin > 211)
-    {
-        vertin = 211;
-    }
-    else if (vertin < 5)
-    {
-        vertin = 5;
-    }
-    return vertin;
-}
-
-// draws waves with trigger point locked to y-axis
-// j = 0 at trigger point, negative values for left half of screen, positive for right
-void Display::drawInmV(int channel, int start, uint16_t color)
-{
-    int y1, y2, scaling, sample;
-    int j = -152;       // number of pixels to the left of center trigger sample
-
-    // "step" calculates number of samples per pixel horizontally in wave display 
-    // (sec/quarter / pixels/quarter) * samples/sec = samples/pixel
-    double step = ((Hdiv[hscale] / 38.0) * SAMPLE_RATE);
-
-    if (channel == 0)
-    {
-        scaling = vscale1;
-    }
-    else
-    {
-        scaling = vscale2;
-    }
-
-    // x value of line endpoints must be at least 2 pixels apart
-    // step >= 0.5 ensures at least one sample every 2 pixels
-    if (step >= 0.5)
-    {
-        sample = round(start + (j * step));
-        
-        // voltage magnitude matches oscilloscope with 50 ohm terminaltion
-        // remove /4 to match 1 MOhm magnitude?
-        // multiply Vdiv * 4 to match amplitude for 50 ohm termination
-        y1 = (108 + (104.0 * (data[channel][sample] / (1000.0 * Vdiv[scaling]))));
-        y1 = vertBoundCheck(y1);
-        j+=2;
-        for (int i = 11; i < 312; i += 2)
-        {
-            sample = round(start + (j * step));
-            if (sample > 31999)
-            {
-                return;         // stops drawing wave if no samples left in array
-            }
-            y2 = (108 + (104.0 * (data[channel][sample] / (1000.0 * Vdiv[scaling]))));
-            y2 = vertBoundCheck(y2);
-
-            tft->drawLine(i, y1, (i + 2), y2, color);
-
-            y1 = y2;
-            j+=2;
-        }
-    }
-    else        // less than 1 sample every two pixels, starts spreading out adjacent samples
-    {
-        j = round(Hdiv[hscale] * SAMPLE_RATE * -4);
-        // voltage magnitude matches oscilloscope with 50 ohm terminaltion
-        // remove /4 to match 1 MOhm magnitude?
-        // multiply Vdiv * 4 to match amplitude for 50 ohm termination
-        y1 = (108 + (104.0 * (data[channel][start + j] / (1000.0 * Vdiv[scaling]))));
-        y1 = vertBoundCheck(y1);
-        j++;
-        for (float i = 11; i < 312; i += (1.0 / step))
-        {
-             if ((start + j) > 31999)
-            {
-                return;         // stops drawing wave if no samples left in array
-            }
-            y2 = (108 + (104.0 * (data[channel][start + j] / (1000.0 * Vdiv[scaling]))));
-            y2 = vertBoundCheck(y2);
-
-            tft->drawLine(i, y1, round(i + (1.0 / step)), y2, color);
-
-            y1 = y2;
-            j++;
-        }
-    }
-}
-
-// draws trigger triangle on left side of display window, triangle filled if adjusting trigger value
-void Display::drawTrigger()
-{
-    int trig = (((trigger - 30) / 30.0) * 104.0) + 104;
-    int trigPointer = (212 - trig);
-    if (mode == 5)
-    {
-        tft->fillTriangle(2, (trigPointer + 6), 2, (trigPointer - 6), 8, trigPointer, ILI9341_WHITE);
-    }
-    else
-    {
-        tft->drawTriangle(2, (trigPointer + 6), 2, (trigPointer - 6), 8, trigPointer, ILI9341_WHITE);
-    }
-}
-
-// draws gridlines for wave display window
+// draws gridlines for wave draw window
 void Display::drawGrid()
 {
     // horizontal lines
-
     tft->drawFastHLine(10, 4, 304, ILI9341_WHITE);
     tft->drawFastHLine(10, 30, 304, CL(50, 50, 50));
     tft->drawFastHLine(10, 56, 304, CL(50, 50, 50));
@@ -206,169 +39,158 @@ void Display::drawGrid()
     tft->drawFastVLine(314, 4, 208, ILI9341_WHITE);
 }
 
-// Displays time interval between vertical grid lines
-void Display::displayHscale()
+void Display::mainMenu()
 {
-    int scaling = hscale;
-
-    tft->setFont(Arial_9);
-    tft->setCursor(199, 222);
+    tft->setFont(Arial_18);
+    tft->setCursor(20, 20);
     tft->setTextColor(ILI9341_WHITE);
-    tft->print("Time: ");
-    if (Hdiv[hscale] >= 1)
-    {
-        tft->print(Hdiv[hscale], 0);
-        tft->print(" s");
-    }
-    else if (Hdiv[hscale] < 1 && Hdiv[hscale] >= 0.001)
-    {
-        tft->print((Hdiv[hscale] * 1000.0), 0);
-        tft->print(" ms");
-    }
-    else if (Hdiv[hscale] < 0.001 && Hdiv[hscale] >= 0.000001)
-    {
-        tft->print((Hdiv[hscale] * 1000000.0), 0);
-        tft->print(" us");
-    }
-    else if (Hdiv[hscale] < 0.000001 && Hdiv[hscale] >= 0.000000001)
-    {
-        tft->print((Hdiv[hscale] * 1000000000.0), 0);
-        tft->print(" ns");
-    }
-    else
-    {
-        tft->print((Hdiv[hscale] * 1000000000000.0), 0);
-        tft->print(" ps");
-    }
+    tft->print("Touch Synth");
+
+    tft->setFont(Arial_14);
+    tft->drawRoundRect(40, 60, 240, 50, 4, ILI9341_WHITE);
+    tft->setCursor(60, 65);
+    tft->print("Draw Wave");
+    tft->drawRoundRect(40, 120, 240, 50, 4, ILI9341_WHITE);
+    tft->setCursor(60, 65);
+    tft->print("Select Wave");
+    tft->drawRoundRect(40, 180, 240, 50, 4, ILI9341_WHITE);
+    tft->setCursor(60, 65);
+    tft->print("Envelope");
 }
 
-void Display::displayRunStop()
+void Display::bottomMenu1()
 {
-    tft->setFont(Arial_8);
-    if (runStop == 0)
-    {
-        tft->fillRoundRect(288, 216, 27, 10, 2, ILI9341_WHITE);
-        tft->setCursor(292, 217);
-        tft->setTextColor(ILI9341_BLACK);
-        tft->print("Run");
-        tft->setCursor(291, 228);
-        tft->setTextColor(ILI9341_WHITE);
-        tft->print("Stop");
-    }
-    else
-    {
-        tft->setCursor(292, 217);
-        tft->setTextColor(ILI9341_WHITE);
-        tft->print("Run");
-        tft->fillRoundRect(288, 227, 27, 10, 2, ILI9341_WHITE);
-        tft->setCursor(291, 228);
-        tft->setTextColor(ILI9341_BLACK);
-        tft->print("Stop");
-    }
-}
-
-void Display::displayTrigChannel()
-{
-    tft->setFont(Arial_8);
-    tft->setCursor(8, 217);
-    tft->setTextColor(ILI9341_WHITE);
-    tft->print("Trig:");
-
-    if (triggerChannel == 0)
-    {
-        tft->fillRoundRect(6, 227, 23, 10, 2, CL(224, 204, 27));
-        tft->setCursor(9, 228);
-        tft->setTextColor(ILI9341_BLACK);
-        tft->print("CH1");
-    }
-    else
-    {
-        tft->fillRoundRect(6, 227, 23, 10, 2, CL(52, 214, 201));
-        tft->setCursor(8, 228);
-        tft->setTextColor(ILI9341_BLACK);
-        tft->print("CH2");
-    }
-}
-
-// Displays user interface data on bottom of screen and vertical scaling
-// Calls functions to display horizontal scaling, run/stop, and trigger channel
-void Display::displayData()
-{
+    // Button text bubble
+    tft->fillRoundRect(32, 217, 84, 20, 2, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(120, 217, 84, 20, 2, ILI9341_MAGENTA);
+    tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_DARKGREEN);
+   
+    // Button text
     tft->setFont(Arial_9);
+    tft->setTextColor(ILI9341_BLACK);
+    
+    tft->setCursor(55, 222);
+    tft->print("Back");
 
-    tft->setCursor(33, 222);
-    tft->setTextColor(CL(224, 204, 27));
-    tft->print("CH1: ");
+    tft->setCursor(140, 222);
+    tft->print("Clear");
 
-    if (Vdiv[vscale1] >= 1)
-    {
-        tft->print(Vdiv[vscale1], 2);
-        tft->print(" V");
-    }
-    else
-    {
-        tft->print((Vdiv[vscale1] * 1000), 0);
-        tft->print(" mV");
-    }
-
-    tft->setCursor(116, 222);
-    tft->setTextColor(CL(52, 214, 201));
-    tft->print("CH2: ");
-
-    if (Vdiv[vscale2] >= 1)
-    {
-        tft->print(Vdiv[vscale2], 2);
-        tft->print(" V");
-    }
-    else
-    {
-        tft->print((Vdiv[vscale2] * 1000), 0);
-        tft->print(" mV");
-    }
-
-    displayTrigChannel();
-    displayHscale();
-    displayRunStop();
+    tft->setCursor(234, 222);
+    tft->print("Set");
 }
 
-void Display::displayMode()
+void Display::bottomMenu2()
 {
-    if (mode == 1)
-    {
-        tft->drawRoundRect(31, 217, 83, 20, 2, ILI9341_WHITE);
-    }
-    else if (mode == 2)
-    {
-        tft->drawRoundRect(114, 217, 83, 20, 2, ILI9341_WHITE);
-    }
-    else if (mode == 3)
-    {
-        tft->drawRoundRect(197, 217, 89, 20, 2, ILI9341_WHITE);
-    }
-    else if (mode == 4)
-    {
-        tft->drawRoundRect(286, 214, 31, 25, 2, ILI9341_WHITE);
-    }
-    else if (mode == 6)
-    {
-        tft->drawRoundRect(4, 214, 27, 25, 2, ILI9341_WHITE);
-    }
+    // Button text bubble
+    tft->fillRoundRect(32, 217, 84, 20, 2, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(120, 217, 84, 20, 2, ILI9341_MAGENTA);
+    tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_DARKGREEN);
+   
+    // Button text
+    tft->setFont(Arial_9);
+    tft->setTextColor(ILI9341_BLACK);
+    
+    tft->setCursor(55, 222);
+    tft->print("Back");
+
+    tft->setCursor(140, 222);
+    tft->print("Clear");
+
+    tft->setCursor(234, 222);
+    tft->print("Set");
+}
+
+void Display::bottomMenu3()
+{
+    // Button text bubble
+    tft->fillRoundRect(32, 217, 84, 20, 2, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(120, 217, 84, 20, 2, ILI9341_MAGENTA);
+    tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_DARKGREEN);
+   
+    // Button text
+    tft->setFont(Arial_9);
+    tft->setTextColor(ILI9341_BLACK);
+    
+    tft->setCursor(55, 222);
+    tft->print("Back");
+
+    tft->setCursor(140, 222);
+    tft->print("Clear");
+
+    tft->setCursor(234, 222);
+    tft->print("Set");
+}
+
+void Display::drawWave()
+{
+    drawGrid();
+    bottomMenu1();
+}
+
+void Display::selectWave()
+{
+    bottomMenu2();
+}
+
+void Display::ADSRfaders()
+{
+    tft->fillRoundRect(11, 155 - attack, 73, 56, 4, ILI9341_WHITE);
+    tft->fillRoundRect(87, 155 - decay, 73, 56, 4, ILI9341_WHITE);
+    tft->fillRoundRect(163, 155 - sustain, 73, 56, 4, ILI9341_WHITE);
+    tft->fillRoundRect(239, 155 - release, 73, 56, 4, ILI9341_WHITE);
+
+    tft->setFont(Arial_12);
+    tft->setTextColor(ILI9341_BLACK);
+
+    tft->setCursor(44, 160 - attack);
+    tft->print("A");
+    tft->setCursor(120, 160 - decay);
+    tft->print("D");
+    tft->setCursor(196, 160 - sustain);
+    tft->print("S");
+    tft->setCursor(272, 160 - release);
+    tft->print("R");
+}
+
+void Display::envelope()
+{
+    tft->fillRoundRect(11, 5, 73, 206, 4, CL(50, 50, 50));
+    tft->fillRoundRect(87, 5, 73, 206, 4, CL(50, 50, 50));
+    tft->fillRoundRect(163, 5, 73, 206, 4, CL(50, 50, 50));
+    tft->fillRoundRect(239, 5, 73, 206, 4, CL(50, 50, 50));
+
+    tft->drawFastVLine(48, 5, 206, ILI9341_BLACK);
+    tft->drawFastVLine(124, 5, 206, ILI9341_BLACK);
+    tft->drawFastVLine(200, 5, 206, ILI9341_BLACK);
+    tft->drawFastVLine(276, 5, 206, ILI9341_BLACK);
+    
+    tft->drawRoundRect(10, 4, 75, 208, 4, ILI9341_WHITE);
+    tft->drawRoundRect(86, 4, 75, 208, 4, ILI9341_WHITE);
+    tft->drawRoundRect(162, 4, 75, 208, 4, ILI9341_WHITE);
+    tft->drawRoundRect(238, 4, 75, 208, 4, ILI9341_WHITE);
+
+    ADSRfaders();
+    bottomMenu3();
 }
 
 void Display::update()
 {
-    // int start = midTrigger();
-    int start = newTrigger();
-    //Serial.println(" Received trigger start ");
-    tft->fillScreen(ILI9341_BLACK);
-    drawGrid();
-    //drawIn(0, start, CL(224, 204, 27));
-    //drawIn(1, start, CL(52, 214, 201));
-    drawInmV(0, start, CL(224, 204, 27));
-    drawInmV(1, start, CL(52, 214, 201));
-    drawTrigger();
-    displayData();
-    displayMode();
-    // delay(1);
+    if (menu == 0)
+    {
+        mainMenu();
+    }
+    else if (menu == 1)
+    {
+        drawWave();
+    }
+    else if (menu == 2)
+    {
+        selectWave();
+    }
+    else if (menu == 3)
+    {
+        envelope();
+    }
+
     tft->updateScreen();
 }
