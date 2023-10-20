@@ -16,7 +16,7 @@ void Touch::mainMenu(Display * display)
     }
 }
 
-void Touch::bottomMenu1(Display * display)
+void Touch::bottomMenu1(Display * display, Wave wave)
 {
     if (xin >= 32 && xin <= 116 && yin > 217 && yin < 237)
     {
@@ -24,11 +24,14 @@ void Touch::bottomMenu1(Display * display)
     }
     else if (xin >= 120 && xin <= 204 && yin > 217 && yin < 237)
     {
-        
+        wave.resetWave();
     }
     else if (xin >= 208 && xin <= 292 && yin > 217 && yin < 237)
     {
-        
+        display->drawWaveOn = true;
+        if (display->selectWaveOn) {
+            display->selectWaveOn = false;  
+        }
     }
 }
 
@@ -38,13 +41,14 @@ void Touch::bottomMenu2(Display * display)
     {
         display->menu = 0;
     }
-    else if (xin >= 120 && xin <= 204 && yin > 217 && yin < 237)
-    {
-        
-    }
     else if (xin >= 208 && xin <= 292 && yin > 217 && yin < 237)
     {
-        
+        if (display->selectWaveOn) {
+            display->selectWaveOn = false;  
+        }
+        else if (!display->selectWaveOn) {
+            display->selectWaveOn = true;
+        }
     }
 }
 
@@ -56,22 +60,34 @@ void Touch::bottomMenu3(Display * display)
     }
     else if (xin >= 120 && xin <= 204 && yin > 217 && yin < 237)
     {
-        
+        display->attack = 75;
+        display->decay = 75;
+        display->sustain = 75;
+        display->release = 75;
     }
     else if (xin >= 208 && xin <= 292 && yin > 217 && yin < 237)
     {
-        
+        if (display->envelopeOn) {
+            display->envelopeOn = false;  
+        }
+        else if (!display->envelopeOn) {
+            display->envelopeOn = true;
+        }
     }
 }
 
-void Touch::drawWave(Display * display)
+void Touch::drawWave(Display * display, Wave wave)
 {
-    
+    if (xin >= 11 && xin <= 313 && yin > 5 && yin < 211)
+    {
+        wave.updateWave(xin, yin);
+    }
+    bottomMenu2(display);
 }
 
-void Touch::selectWave(Display * display)
+void Touch::selectWave(Display * display, Wave wave)
 {
-    
+    bottomMenu2(display);
 }
 
 void Touch::adjustAttack(Display * display)
@@ -82,7 +98,7 @@ void Touch::adjustAttack(Display * display)
     }
     else if (yin > 32 && yin < 184)
     {
-        display->attack = 184 - yin;
+        display->attack = 183 - yin;
     }
     if (yin >= 184 && yin < 212)
     {
@@ -98,7 +114,7 @@ void Touch::adjustDecay(Display * display)
     }
     else if (yin > 32 && yin < 184)
     {
-        display->decay = 184 - yin;
+        display->decay = 183 - yin;
     }
     if (yin >= 184 && yin < 212)
     {
@@ -114,7 +130,7 @@ void Touch::adjustSustain(Display * display)
     }
     else if (yin > 32 && yin < 184)
     {
-        display->sustain = 184 - yin;
+        display->sustain = 183 - yin;
     }
     if (yin >= 184 && yin < 212)
     {
@@ -130,7 +146,7 @@ void Touch::adjustRelease(Display * display)
     }
     else if (yin > 32 && yin < 184)
     {
-        display->release = 184 - yin;
+        display->release = 183 - yin;
     }
     if (yin >= 184 && yin < 212)
     {
@@ -156,9 +172,10 @@ void Touch::envelope(Display * display)
     {
         adjustRelease(display);
     }
+    bottomMenu3(display);
 }
 
-void Touch::processTouch(Display * display)
+void Touch::processTouch(Display * display, Wave wave)
 {
     if (display->menu == 0)
     {
@@ -166,11 +183,11 @@ void Touch::processTouch(Display * display)
     }
     else if (display->menu == 1)
     {
-        drawWave(display);
+        drawWave(display, wave);
     }
     else if (display->menu == 2)
     {
-        selectWave(display);
+        selectWave(display, wave);
     }
     else if (display->menu == 3)
     {

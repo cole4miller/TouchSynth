@@ -44,7 +44,7 @@ void Display::mainMenu()
     tft->setFont(Arial_18);
     tft->setCursor(20, 20);
     tft->setTextColor(ILI9341_WHITE);
-    tft->print("Touch Synth");
+    tft->print("TouchSynth");
 
     tft->setFont(Arial_14);
     tft->drawRoundRect(40, 60, 240, 50, 4, ILI9341_WHITE);
@@ -83,8 +83,6 @@ void Display::bottomMenu2()
 {
     // Button text bubble
     tft->fillRoundRect(32, 217, 84, 20, 2, ILI9341_LIGHTGREY);
-    tft->fillRoundRect(120, 217, 84, 20, 2, ILI9341_MAGENTA);
-    tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_DARKGREEN);
    
     // Button text
     tft->setFont(Arial_9);
@@ -93,11 +91,16 @@ void Display::bottomMenu2()
     tft->setCursor(55, 222);
     tft->print("Back");
 
-    tft->setCursor(140, 222);
-    tft->print("Clear");
-
-    tft->setCursor(234, 222);
-    tft->print("Set");
+    if (selectWaveOn) {
+        tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_DARKGREEN);
+        tft->setCursor(236, 222);
+        tft->print("On");  
+    }
+    else if (!selectWaveOn) {
+        tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_LIGHTGREY);
+        tft->setCursor(234, 222);
+        tft->print("Off");
+    }
 }
 
 void Display::bottomMenu3()
@@ -105,7 +108,7 @@ void Display::bottomMenu3()
     // Button text bubble
     tft->fillRoundRect(32, 217, 84, 20, 2, ILI9341_LIGHTGREY);
     tft->fillRoundRect(120, 217, 84, 20, 2, ILI9341_MAGENTA);
-    tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_DARKGREEN);
+    
    
     // Button text
     tft->setFont(Arial_9);
@@ -115,21 +118,62 @@ void Display::bottomMenu3()
     tft->print("Back");
 
     tft->setCursor(140, 222);
-    tft->print("Clear");
+    tft->print("Reset");
 
-    tft->setCursor(234, 222);
-    tft->print("Set");
+    if (envelopeOn) {
+        tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_DARKGREEN);
+        tft->setCursor(236, 222);
+        tft->print("On");  
+    }
+    else if (!envelopeOn) {
+        tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_LIGHTGREY);
+        tft->setCursor(234, 222);
+        tft->print("Off");
+    }
+    
 }
 
-void Display::drawWave()
+void Display::drawWave(Wave wave)
 {
     drawGrid();
     bottomMenu1();
+
+    for (int i = 0; i < 303; i++)
+    {
+        if (wave.pointUsed[i + 11])
+        {
+            tft->drawPixel((i + 11), (108 - wave.waveY[i + 11]), ILI9341_WHITE);
+        }
+    }
 }
 
-void Display::selectWave()
+void Display::selectWave(Wave wave)
 {
+    
+    tft->fillRoundRect(10, 4, 150, 102, 4, ILI9341_LIGHTGREY);
     bottomMenu2();
+
+    // horizontal lines
+    tft->drawFastHLine(10, 4, 304, ILI9341_WHITE);
+    tft->drawFastHLine(10, 30, 304, CL(50, 50, 50));
+    tft->drawFastHLine(10, 56, 304, CL(50, 50, 50));
+    tft->drawFastHLine(10, 82, 304, CL(50, 50, 50));
+    tft->drawFastHLine(10, 108, 304, CL(100, 100, 100));
+    tft->drawFastHLine(10, 134, 304, CL(50, 50, 50));
+    tft->drawFastHLine(10, 160, 304, CL(50, 50, 50));
+    tft->drawFastHLine(10, 186, 304, CL(50, 50, 50));
+    tft->drawFastHLine(10, 212, 304, ILI9341_WHITE);
+
+    // vertical lines
+    tft->drawFastVLine(10, 4, 208, ILI9341_WHITE);
+    tft->drawFastVLine(48, 5, 207, CL(50, 50, 50));
+    tft->drawFastVLine(86, 5, 207, CL(50, 50, 50));
+    tft->drawFastVLine(124, 5, 207, CL(50, 50, 50));
+    tft->drawFastVLine(162, 5, 207, CL(100, 100, 100));
+    tft->drawFastVLine(200, 5, 207, CL(50, 50, 50));
+    tft->drawFastVLine(238, 5, 207, CL(50, 50, 50));
+    tft->drawFastVLine(276, 5, 207, CL(50, 50, 50));
+    tft->drawFastVLine(314, 4, 208, ILI9341_WHITE);
 }
 
 void Display::ADSRfaders()
@@ -173,19 +217,21 @@ void Display::envelope()
     bottomMenu3();
 }
 
-void Display::update()
+void Display::update(Wave wave)
 {
+    tft->fillScreen(ILI9341_BLACK);
+
     if (menu == 0)
     {
         mainMenu();
     }
     else if (menu == 1)
     {
-        drawWave();
+        drawWave(wave);
     }
     else if (menu == 2)
     {
-        selectWave();
+        selectWave(wave);
     }
     else if (menu == 3)
     {

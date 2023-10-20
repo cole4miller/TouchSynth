@@ -4,6 +4,7 @@
 #include "sampler.h"
 #include "input.h"
 #include "touch.h"
+#include "wave.h"
 #include "XPT2046_Touchscreen.h"
 
 const int channel_1_pin = A4;
@@ -24,6 +25,7 @@ Display *display;
 #define CS_PIN  8
 XPT2046_Touchscreen ts(CS_PIN);
 Touch touch;
+Wave wave;
 
 Encoder knob(knob_in_1, knob_in_2);
 KnobIn knob_in;
@@ -85,7 +87,7 @@ void loop()
         }
         
 
-        display->update();
+        display->update(wave);
     }
     
     if (ts.touched()) {
@@ -94,7 +96,7 @@ void loop()
         display->yin = p.y;
         touch.xin = p.x;
         touch.yin = p.y;
-        touch.processTouch(display);
+        touch.processTouch(display, wave);
         
         Serial.print("x = ");
         Serial.print(p.x);
