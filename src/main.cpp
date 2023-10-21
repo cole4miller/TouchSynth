@@ -1,10 +1,11 @@
 #include <Arduino.h>
 #include <Encoder.h>
+#include "wave.h"
 #include "display.h"
 #include "sampler.h"
 #include "input.h"
 #include "touch.h"
-#include "wave.h"
+
 #include "XPT2046_Touchscreen.h"
 
 const int channel_1_pin = A4;
@@ -19,13 +20,14 @@ int16_t channel_2_data[BUFFER_SIZE];
 uint16_t screen_channel_1_data[BUFFER_SIZE];
 uint16_t screen_channel_2_data[BUFFER_SIZE];
 
+Wave wave;
 ILI9341_t3n tft = ILI9341_t3n(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCK, TFT_MISO);
 Display *display;
-
+Touch touch;
 #define CS_PIN  8
 XPT2046_Touchscreen ts(CS_PIN);
-Touch touch;
-Wave wave;
+
+
 
 Encoder knob(knob_in_1, knob_in_2);
 KnobIn knob_in;
@@ -57,7 +59,9 @@ void setup()
    
     display = new Display(channel_1_data, channel_2_data, &tft);
     ts.begin();
-    ts.setRotation(1);
+    ts.setRotation(3);
+
+    wave.resetWave();
 
     setupADC(channel_1_pin, channel_2_pin);
 
@@ -73,7 +77,7 @@ void setup()
 
 void loop()
 {
-    
+    /*
     if (DMA_completed())
     {
         processBuffers(channel_1_data, channel_2_data);
@@ -89,20 +93,15 @@ void loop()
 
         display->update(wave);
     }
-    
+    */
+    display->update(wave);
     if (ts.touched()) {
         TS_Point p = ts.getPoint();
-        display->xin = p.x;
-        display->yin = p.y;
-        touch.xin = p.x;
-        touch.yin = p.y;
-        touch.processTouch(display, wave);
-        
-        Serial.print("x = ");
-        Serial.print(p.x);
-        Serial.print(", y = ");
-        Serial.print(p.y);
-
+        display->xin = (p.x - 200.0) * (320.0 / 3500.0);
+        display->yin = (p.y - 300.0) * (240.0 / 3550.0);
+        touch.xin = (p.x - 200.0) * (320.0 / 3550.0);
+        touch.yin = (p.y - 300.0) * (240.0 / 3550.0);
+        wave = touch.processTouch(display, wave);
     }
 
     currentButtonState = digitalRead(knob_push);

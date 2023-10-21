@@ -2,10 +2,11 @@
 #include <Arduino.h>
 #include <cmath>
 #include "SPI.h"
+#include "wave.h"
 #include "ILI9341_t3n.h"
 #include "ILI9341_t3n_font_Arial.h"
 #include "display.h"
-#include "wave.h"
+
 
 #define TFT_DC 9
 #define TFT_CS 10
@@ -14,6 +15,8 @@
 #define TFT_MISO 12
 #define TFT_MOSI 11
 #define TOUCH_CS 8
+
+class Wave;
 
 class Display
 {
@@ -42,11 +45,10 @@ private:
     void bottomMenu2();
     void bottomMenu3();
     void drawWave(Wave wave);
+    void waveIcons();
     void selectWave(Wave wave);
     void ADSRfaders();
     void envelope();
-
-    bool envelopeOn = false;
 
     int16_t *data[2];
 

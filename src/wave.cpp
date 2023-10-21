@@ -4,6 +4,11 @@ void Wave::updateWave(uint16_t xin, uint16_t yin)
 {
     waveY[xin - 11] = (108 - yin);
     pointUsed[xin - 11] = true;
+    Serial.print("x = ");
+    Serial.print(xin);
+    Serial.print(", y = ");
+    Serial.println(yin);
+    
     if ((xin - 11) < waveXstart)
     {
         waveXstart = xin - 11;

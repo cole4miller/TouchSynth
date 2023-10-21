@@ -4,20 +4,22 @@
 #include "wave.h"
 #include "XPT2046_Touchscreen.h"
 
+class Display;
+class Wave;
 class Touch 
 {
     public:
     uint16_t xin = 0;           // Values 0 - 319
     uint16_t yin = 0;           // Values 0 - 239
 
-    void processTouch(Display * display, Wave wave);
+    Wave processTouch(Display * display, Wave wave);
 
     private:
     void mainMenu(Display * display);
-    void bottomMenu1(Display * display, Wave wave);
-    void bottomMenu2(Display * display);
+    Wave bottomMenu1(Display * display, Wave wave);
+    void bottomMenu2(Display * display, Wave wave);
     void bottomMenu3(Display * display);
-    void drawWave(Display * display, Wave wave);
+    Wave drawWave(Display * display, Wave wave);
     void selectWave(Display * display, Wave wave);
     void adjustAttack(Display * display);
     void adjustDecay(Display * display);
