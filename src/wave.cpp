@@ -33,20 +33,60 @@ void Wave::resetWave()
 
 void Wave::squareWave()
 {
+    selectWaveXstart = 50;
+    selectWaveXend = 249;
+    for (int i = 50; i < 150; i++) 
+    {
+        selectPointUsed[i] = true;
+        selectWaveY[i] = 75;
+    }
+    for (int i = 150; i < 250; i++) 
+    {
+        selectPointUsed[i] = true;
+        selectWaveY[i] = -75;
+    }
 
 }
 
 void Wave::sineWave()
 {
-
+    selectWaveXstart = 50;
+    selectWaveXend = 249;
+    for (int i = 50; i < 250; i++) 
+    {
+        selectPointUsed[i] = true;
+        selectWaveY[i] = 75 * sin(2.0 * M_PI * (i - 50.0) / 200.0);
+    }
 }
 
 void Wave::triangleWave()
 {
-
+    selectWaveXstart = 50;
+    selectWaveXend = 249;
+    for (int i = 50; i < 100; i++) 
+    {
+        selectPointUsed[i] = true;
+        selectWaveY[i] = 75.0 * (i - 50.0) / 50.0;
+    }
+    for (int i = 100; i < 200; i++) 
+    {
+        selectPointUsed[i] = true;
+        selectWaveY[i] = 75.0 + (-75.0 * ((i - 100.0) / 50.0));
+    }
+    for (int i = 200; i < 250; i++) 
+    {
+        selectPointUsed[i] = true;
+        selectWaveY[i] = -75.0 + (75.0 * (i - 200.0) / 50.0);
+    }
 }
 
 void Wave::sawtoothWave()
 {
-
+    selectWaveXstart = 50;
+    selectWaveXend = 249;
+    for (int i = 50; i < 250; i++) 
+    {
+        selectPointUsed[i] = true;
+        selectWaveY[i] = -75.0 + (75.0 * (i - 50.0) / 100.0);
+    }
 }

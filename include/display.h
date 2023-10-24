@@ -23,6 +23,7 @@ class Display
 public:
     Display(int16_t *, int16_t *, ILI9341_t3n *);
     void update(Wave wave);
+    void updateSet(Wave wave);
 
     uint16_t menu = 0;              // 0 = Main menu, 1 = Draw Wave
                                     // 2 = Select Wave, 3 = Envelope
@@ -40,7 +41,8 @@ public:
 
 private:
     void drawGrid();
-    void mainMenu();
+    void miniWave(Wave wave);
+    void mainMenu(Wave wave);
     void bottomMenu1();
     void bottomMenu2();
     void bottomMenu3();
@@ -49,6 +51,7 @@ private:
     void selectWave(Wave wave);
     void ADSRfaders();
     void envelope();
+    void setConfirm();
 
     int16_t *data[2];
 

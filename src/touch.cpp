@@ -2,17 +2,17 @@
 
 void Touch::mainMenu(Display * display)
 {
-    if (xin > 40 && xin < 280 && yin > 60 && yin < 110)
+    if (xin > 10 && xin < 160 && yin > 108 && yin < 140)
     {
         display->menu = 1;
         delay(50);
     }
-    else if (xin > 40 && xin < 280 && yin > 120 && yin < 170)
+    else if (xin > 10 && xin < 160 && yin > 144 && yin < 176)
     {
         display->menu = 2;
         delay(50);
     }
-    else if (xin > 40 && xin < 280 && yin > 180 && yin < 230)
+    else if (xin > 10 && xin < 160 && yin > 180 && yin < 212)
     {
         display->menu = 3;
         delay(50);
@@ -34,11 +34,19 @@ Wave Touch::bottomMenu1(Display * display, Wave wave)
     {
         display->drawWaveOn = true;
         display->selectWaveOn = false;  
+        wave.customWaveXstart = wave.waveXstart;
+        wave.customWaveXend = wave.waveXend;
+        for (int i = 0; i < 303; i++)
+        {
+            wave.customPointUsed[i] = wave.pointUsed[i];
+            wave.customWaveY[i] = wave.waveY[i];
+        }
+        display->updateSet(wave);
     }
     return wave;
 }
 
-void Touch::bottomMenu2(Display * display, Wave wave)
+Wave Touch::bottomMenu2(Display * display, Wave wave)
 {
     if (xin >= 32 && xin <= 116 && yin > 217 && yin < 237)
     {
@@ -52,6 +60,7 @@ void Touch::bottomMenu2(Display * display, Wave wave)
         }
         else if (!display->selectWaveOn) {
             display->selectWaveOn = true;
+            display->drawWaveOn = false;
             if (display->selectWaveType == 0)
             {
                 wave.squareWave();
@@ -71,6 +80,7 @@ void Touch::bottomMenu2(Display * display, Wave wave)
         }
         delay(50);
     }
+    return wave;
 }
 
 void Touch::bottomMenu3(Display * display)
@@ -109,7 +119,7 @@ Wave Touch::drawWave(Display * display, Wave wave)
     return wave;
 }
 
-void Touch::selectWave(Display * display, Wave wave)
+Wave Touch::selectWave(Display * display, Wave wave)
 {
     if (xin >= 10 && xin <= 160 && yin >= 4 && yin <= 106)
     {
@@ -143,7 +153,8 @@ void Touch::selectWave(Display * display, Wave wave)
             wave.sawtoothWave();
         }
     }
-    bottomMenu2(display, wave);
+    wave = bottomMenu2(display, wave);
+    return wave;
 }
 
 void Touch::adjustAttack(Display * display)
@@ -243,7 +254,7 @@ Wave Touch::processTouch(Display * display, Wave wave)
     }
     else if (display->menu == 2)
     {
-        selectWave(display, wave);
+        wave = selectWave(display, wave);
     }
     else if (display->menu == 3)
     {

@@ -11,8 +11,18 @@ class Wave
     uint16_t waveXend = 0;
     bool pointUsed[303];        // Bool for whether each x value is drawn
     int waveY[303];             // Wave y values array, -103 <= y <= 103
-    //uint16_t xin = 0;           // Values 0 - 319
-    //uint16_t yin = 0;           // Values 0 - 239
+    
+    // custom drawn wave
+    uint16_t customWaveXstart = 302;  // x values from 0 to 302
+    uint16_t customWaveXend = 0;
+    bool customPointUsed[303];
+    int customWaveY[303];
+    
+    // premade wave forms
+    uint16_t selectWaveXstart = 302;  // x values from 0 to 302
+    uint16_t selectWaveXend = 0;
+    bool selectPointUsed[303];
+    int selectWaveY[303];
 
     void updateWave(uint16_t xin, uint16_t yin);
     void resetWave();

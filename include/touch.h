@@ -17,10 +17,10 @@ class Touch
     private:
     void mainMenu(Display * display);
     Wave bottomMenu1(Display * display, Wave wave);
-    void bottomMenu2(Display * display, Wave wave);
+    Wave bottomMenu2(Display * display, Wave wave);
     void bottomMenu3(Display * display);
     Wave drawWave(Display * display, Wave wave);
-    void selectWave(Display * display, Wave wave);
+    Wave selectWave(Display * display, Wave wave);
     void adjustAttack(Display * display);
     void adjustDecay(Display * display);
     void adjustSustain(Display * display);
