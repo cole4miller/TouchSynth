@@ -31,6 +31,34 @@ void Wave::resetWave()
     waveXend = 0;
 }
 
+Wave Wave::smoothWave(Wave waveIn)
+{
+    waveIn.smoothWaveXstart = waveIn.waveXstart;
+    waveIn.smoothWaveXend = waveIn.waveXend;
+    int firstPoint = waveIn.smoothWaveXstart;
+    waveIn.smoothPointUsed[firstPoint] = true;
+    waveIn.smoothWaveY[firstPoint] = waveIn.waveY[firstPoint];
+    int secondPoint = firstPoint + 1;
+    while (!waveIn.pointUsed[secondPoint])
+    {
+        secondPoint++;
+    }
+    waveIn.smoothPointUsed[secondPoint] = true;
+    for (int i = secondPoint + 1; i <= waveIn.smoothWaveXend; i++)
+    {
+        if (waveIn.pointUsed[i])
+        {
+            waveIn.smoothWaveY[secondPoint] = (waveIn.waveY[firstPoint] + waveIn.waveY[secondPoint] + waveIn.waveY[i]) / 3.0;
+            waveIn.smoothPointUsed[secondPoint] = true;
+            firstPoint = secondPoint;
+            secondPoint = i;
+        }
+    }
+    waveIn.smoothPointUsed[secondPoint] = true;
+    waveIn.smoothWaveY[secondPoint] = waveIn.waveY[secondPoint];
+    return waveIn;
+}
+
 void Wave::squareWave()
 {
     selectWaveXstart = 50;

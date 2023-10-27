@@ -1,36 +1,36 @@
 #include "touch.h"
 
-void Touch::mainMenu(Display * display)
+void Touch::mainMenu(Display * display, Wave wave)
 {
     if (xin > 10 && xin < 160 && yin > 108 && yin < 140)
     {
         display->menu = 1;
-        delay(50);
+        display->changeScreen(wave);
     }
     else if (xin > 10 && xin < 160 && yin > 144 && yin < 176)
     {
         display->menu = 2;
-        delay(50);
+        display->changeScreen(wave);
     }
     else if (xin > 10 && xin < 160 && yin > 180 && yin < 212)
     {
         display->menu = 3;
-        delay(50);
+        display->changeScreen(wave);
     }
 }
 
 Wave Touch::bottomMenu1(Display * display, Wave wave)
 {
-    if (xin >= 32 && xin <= 116 && yin > 217 && yin < 237)
+    if (xin >= 20 && xin <= 84 && yin > 217 && yin < 237)
     {
         display->menu = 0;
-        delay(50);
+        display->changeScreen(wave);
     }
-    else if (xin >= 120 && xin <= 204 && yin > 217 && yin < 237)
+    else if (xin >= 88 && xin <= 160 && yin > 217 && yin < 237)
     {
         wave.resetWave();
     }
-    else if (xin >= 208 && xin <= 292 && yin > 217 && yin < 237)
+    else if (xin >= 164 && xin <= 236 && yin > 217 && yin < 237)
     {
         display->drawWaveOn = true;
         display->selectWaveOn = false;  
@@ -43,6 +43,19 @@ Wave Touch::bottomMenu1(Display * display, Wave wave)
         }
         display->updateSet(wave);
     }
+    else if (xin >= 240 && xin <= 312 && yin > 217 && yin < 237)
+    {
+        if (display->waveOptions)
+        {
+            display->waveOptions = false;
+            display->changeScreen(wave);
+        }
+        else if (!display->waveOptions)
+        {
+            display->waveOptions = true;
+            display->changeScreen(wave);
+        }
+    }
     return wave;
 }
 
@@ -51,7 +64,7 @@ Wave Touch::bottomMenu2(Display * display, Wave wave)
     if (xin >= 32 && xin <= 116 && yin > 217 && yin < 237)
     {
         display->menu = 0;
-        delay(50);
+        display->changeScreen(wave);
     }
     else if (xin >= 208 && xin <= 292 && yin > 217 && yin < 237)
     {
@@ -78,17 +91,17 @@ Wave Touch::bottomMenu2(Display * display, Wave wave)
                 wave.sawtoothWave();
             }
         }
-        delay(50);
+        display->updateSet(wave);
     }
     return wave;
 }
 
-void Touch::bottomMenu3(Display * display)
+void Touch::bottomMenu3(Display * display, Wave wave)
 {
     if (xin >= 32 && xin <= 116 && yin > 217 && yin < 237)
     {
         display->menu = 0;
-        delay(50);
+        display->changeScreen(wave);
     }
     else if (xin >= 120 && xin <= 204 && yin > 217 && yin < 237)
     {
@@ -105,13 +118,50 @@ void Touch::bottomMenu3(Display * display)
         else if (!display->envelopeOn) {
             display->envelopeOn = true;
         }
-        delay(50);
+        display->updateSet(wave);
     }
 }
 
 Wave Touch::drawWave(Display * display, Wave wave)
 {
-    if (xin >= 11 && xin <= 313 && yin > 5 && yin < 211)
+    if (display->waveOptions)
+    {
+        if (xin >= 162 && xin <= 314 && yin >= 108 && yin < 134)
+        {
+            if (display->smoothOn)
+            {
+                display->smoothOn = false;
+                display->changeScreen(wave);
+            }
+            else if (!display->smoothOn)
+            {
+                display->smoothOn = true;
+                display->changeScreen(wave);
+            }
+        }
+        else if (xin >= 162 && xin <= 314 && yin > 134 && yin < 160)
+        {
+            // Save
+        }
+        else if (xin >= 162 && xin <= 314 && yin > 160 && yin < 186)
+        {
+            // Memory
+        }
+        else if (xin >= 162 && xin <= 314 && yin > 186 && yin < 212)
+        {
+            if (display->waveOptions)
+            {
+                display->waveOptions = false;
+                display->changeScreen(wave);
+            }
+            else if (!display->waveOptions)
+            {
+                display->waveOptions = true;
+                display->changeScreen(wave);
+            }
+        }
+    }
+    else if (xin >= 11 && xin <= 313 && yin > 5 && yin < 211)
     {
         wave.updateWave(xin, yin);
     }
@@ -221,7 +271,7 @@ void Touch::adjustRelease(Display * display)
     }
 }
 
-void Touch::envelope(Display * display)
+void Touch::envelope(Display * display, Wave wave)
 {
     if (xin > 10 && xin < 85 && yin > 4 && yin < 212)
     {
@@ -239,14 +289,14 @@ void Touch::envelope(Display * display)
     {
         adjustRelease(display);
     }
-    bottomMenu3(display);
+    bottomMenu3(display, wave);
 }
 
 Wave Touch::processTouch(Display * display, Wave wave)
 {
     if (display->menu == 0)
     {
-        mainMenu(display);
+        mainMenu(display, wave);
     }
     else if (display->menu == 1)
     {
@@ -258,7 +308,7 @@ Wave Touch::processTouch(Display * display, Wave wave)
     }
     else if (display->menu == 3)
     {
-        envelope(display);
+        envelope(display, wave);
     }
     return wave;
 }

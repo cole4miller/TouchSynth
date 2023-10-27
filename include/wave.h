@@ -17,6 +17,12 @@ class Wave
     uint16_t customWaveXend = 0;
     bool customPointUsed[303];
     int customWaveY[303];
+
+    // smooth custom wave
+    uint16_t smoothWaveXstart = 302;  // x values from 0 to 302
+    uint16_t smoothWaveXend = 0;
+    bool smoothPointUsed[303];
+    int smoothWaveY[303];
     
     // premade wave forms
     uint16_t selectWaveXstart = 302;  // x values from 0 to 302
@@ -26,6 +32,7 @@ class Wave
 
     void updateWave(uint16_t xin, uint16_t yin);
     void resetWave();
+    Wave smoothWave(Wave waveIn);
     void squareWave();
     void sineWave();
     void triangleWave();

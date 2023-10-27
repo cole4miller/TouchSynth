@@ -23,6 +23,7 @@ class Display
 public:
     Display(int16_t *, int16_t *, ILI9341_t3n *);
     void update(Wave wave);
+    void changeScreen(Wave wave);
     void updateSet(Wave wave);
 
     uint16_t menu = 0;              // 0 = Main menu, 1 = Draw Wave
@@ -34,6 +35,8 @@ public:
     uint16_t sustain = 75;          // Values 0 - 150
     uint16_t release = 75;          // Values 0 - 150
     bool drawWaveOn = false;        // Activates custom wave form
+    bool waveOptions = false;
+    bool smoothOn = true;          // Custom wvae for smoothing effect
     bool selectWaveOn = false;      // Activates preset wave form
     bool envelopeOn = false;        // Activates digital envelope
     uint16_t selectWaveType = 0;    // 0 = square, 1 = sine
@@ -52,6 +55,8 @@ private:
     void ADSRfaders();
     void envelope();
     void setConfirm();
+    void onConfirm();
+    void offConfirm();
 
     int16_t *data[2];
 

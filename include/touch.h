@@ -15,15 +15,15 @@ class Touch
     Wave processTouch(Display * display, Wave wave);
 
     private:
-    void mainMenu(Display * display);
+    void mainMenu(Display * display, Wave wave);
     Wave bottomMenu1(Display * display, Wave wave);
     Wave bottomMenu2(Display * display, Wave wave);
-    void bottomMenu3(Display * display);
+    void bottomMenu3(Display * display, Wave wave);
     Wave drawWave(Display * display, Wave wave);
     Wave selectWave(Display * display, Wave wave);
     void adjustAttack(Display * display);
     void adjustDecay(Display * display);
     void adjustSustain(Display * display);
     void adjustRelease(Display * display);
-    void envelope(Display * display);
+    void envelope(Display * display, Wave wave);
 };
