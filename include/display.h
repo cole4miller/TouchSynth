@@ -17,17 +17,19 @@
 #define TOUCH_CS 8
 
 class Wave;
+class Memory;
 
 class Display
 {
 public:
     Display(int16_t *, int16_t *, ILI9341_t3n *);
-    void update(Wave wave);
-    void changeScreen(Wave wave);
-    void updateSet(Wave wave);
+    void update(Wave wave, Memory sdcard);
+    void changeScreen(Wave wave, Memory sdcard);
+    void updateSet(Wave wave, Memory sdcard);
 
     uint16_t menu = 0;              // 0 = Main menu, 1 = Draw Wave
                                     // 2 = Select Wave, 3 = Envelope
+                                    // 4 - Save
     uint16_t xin = 0;               // Values 0 - 319
     uint16_t yin = 0;               // Values 0 - 239
     uint16_t attack = 75;           // Values 0 - 150
@@ -36,19 +38,26 @@ public:
     uint16_t release = 75;          // Values 0 - 150
     bool drawWaveOn = false;        // Activates custom wave form
     bool waveOptions = false;
-    bool smoothOn = true;          // Custom wvae for smoothing effect
+    bool smoothOn = false;          // Custom wvae for smoothing effect
+    uint16_t smoothLevel = 0;
     bool selectWaveOn = false;      // Activates preset wave form
     bool envelopeOn = false;        // Activates digital envelope
     uint16_t selectWaveType = 0;    // 0 = square, 1 = sine
                                     // 2 = triangle, 3 = sawtooth
+    uint16_t saveFile = 0;
+    bool saveLoad;                  // 0 = save, 1 = load
 
 private:
     void drawGrid();
     void miniWave(Wave wave);
     void mainMenu(Wave wave);
+    void saveText();
+    void drawSave(Wave wave, Memory sdcard);
+    void saveWave(Wave wave, Memory sdcard);
     void bottomMenu1();
     void bottomMenu2();
     void bottomMenu3();
+    void bottomMenu4();
     void drawWave(Wave wave);
     void waveIcons();
     void selectWave(Wave wave);
@@ -57,6 +66,7 @@ private:
     void setConfirm();
     void onConfirm();
     void offConfirm();
+    void saveConfirm();
 
     int16_t *data[2];
 

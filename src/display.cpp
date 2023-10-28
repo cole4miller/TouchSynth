@@ -42,25 +42,30 @@ void Display::drawGrid()
 void Display::miniWave(Wave wave)
 {
     // Grid horizontal lines
-    tft->drawFastHLine(162, 108, 152, ILI9341_WHITE);
     tft->drawFastHLine(162, 134, 151, CL(50, 50, 50));
     tft->drawFastHLine(162, 160, 151, CL(100, 100, 100));
     tft->drawFastHLine(162, 186, 151, CL(50, 50, 50));
-    tft->drawFastHLine(162, 212, 152, ILI9341_WHITE);
     
     // Grid vertical lines
-    tft->drawFastVLine(162, 108, 104, ILI9341_WHITE);
     tft->drawFastVLine(200, 108, 103, CL(50, 50, 50));
     tft->drawFastVLine(238, 108, 103, CL(100, 100, 100));
     tft->drawFastVLine(276, 108, 103, CL(50, 50, 50));
-    tft->drawFastVLine(314, 108, 104, ILI9341_WHITE);
+
+    tft->drawRoundRect(162, 108, 152, 104, 4, ILI9341_WHITE);
 
     // Wave form
     if (drawWaveOn)
     {
         if (smoothOn)
         {
-            wave = wave.smoothWave(wave);
+            wave.waveXstart = wave.customWaveXstart;
+            wave.waveXend = wave.customWaveXend;
+            for (int i = 0; i < 303; i++)
+            {
+                wave.pointUsed[i] = wave.customPointUsed[i];
+                wave.waveY[i] = wave.customWaveY[i];
+            }
+            wave = wave.smoothWave(wave, smoothLevel);
             int xprev = wave.smoothWaveXstart;
             for (int i = wave.smoothWaveXstart + 4; i <= wave.smoothWaveXend; i++)
             {
@@ -84,17 +89,6 @@ void Display::miniWave(Wave wave)
                     i = i + 3;
                 }
             }
-            /*
-            for (int i = 0; i < 303; i++)
-            {
-                if (wave.customPointUsed[i])
-                {
-                    //tft->fillRoundRect((i + 10), (107 - wave.customWaveY[i]), 2, 2, 0, ILI9341_WHITE);
-                    tft->drawPixel(((i / 2) + 163), (160 - (wave.customWaveY[i] / 2)), ILI9341_WHITE);
-                    i++;
-                }
-            }
-            */
         }
     }
     else if (selectWaveOn)
@@ -127,33 +121,7 @@ void Display::miniWave(Wave wave)
             tft->drawLine(188, 199, 288, 121, ILI9341_WHITE);
             tft->drawFastVLine(288, 121, 39, ILI9341_WHITE);
         }
-        
-        
-        /*
-        int xprev = 50;
-        for (int i = wave.selectWaveXstart + 4; i <= wave.selectWaveXend; i++)
-        {
-            if (wave.selectPointUsed[i])
-            {
-                tft->drawLine(((xprev / 2.0) + 163), (160 - wave.selectWaveY[xprev] / 2.0), ((i / 2.0) + 163), 160 - wave.selectWaveY[i] / 2.0, ILI9341_WHITE);                
-                xprev = i;
-                i = i + 3;
-            }
-        }
-        */
-        /*
-        for (int i = 0; i < 303; i++)
-        {
-            if (wave.selectPointUsed[i])
-            {
-                //tft->fillRoundRect((i + 10), (107 - wave.selectWaveY[i]), 2, 2, 0, ILI9341_WHITE);
-                tft->drawPixel(((i / 2) + 163), (160 - (wave.selectWaveY[i] / 2)), ILI9341_WHITE);
-                i++;
-            }
-        }
-        */
     }
-    
 }
 
 void Display::mainMenu(Wave wave)
@@ -183,6 +151,223 @@ void Display::mainMenu(Wave wave)
     miniWave(wave);
 }
 
+void Display::saveText()
+{
+    tft->setFont(Arial_18);
+    tft->setTextColor(ILI9341_BLACK);
+    tft->setCursor(18, 18);
+    tft->print("Save Wave");
+
+    tft->fillRoundRect(57, 48, 50, 50, 3, ILI9341_BLACK);
+    tft->fillRoundRect(67, 48, 30, 18, 1, ILI9341_DARKGREY);
+    tft->fillRoundRect(84, 50, 8, 14, 1, ILI9341_BLACK);
+
+    tft->setCursor(36, 127);
+    tft->print("1");
+
+    tft->setCursor(114, 127);
+    tft->print("2");
+
+    tft->setCursor(192, 127);
+    tft->print("3");
+
+    tft->setCursor(269, 127);
+    tft->print("4");
+
+    tft->setCursor(36, 179);
+    tft->print("5");
+
+    tft->setCursor(114, 179);
+    tft->print("6");
+
+    tft->setCursor(192, 179);
+    tft->print("7");
+
+    tft->setCursor(269, 179);
+    tft->print("8");
+}
+
+void Display::drawSave(Wave wave, Memory sdcard)
+{
+    //Wave wave;
+
+    // Grid horizontal lines
+    tft->drawFastHLine(162, 30, 151, CL(50, 50, 50));
+    tft->drawFastHLine(162, 56, 151, CL(100, 100, 100));
+    tft->drawFastHLine(162, 82, 151, CL(50, 50, 50));
+    
+    // Grid vertical lines
+    tft->drawFastVLine(200, 4, 103, CL(50, 50, 50));
+    tft->drawFastVLine(238, 4, 103, CL(100, 100, 100));
+    tft->drawFastVLine(276, 4, 103, CL(50, 50, 50));
+
+    tft->drawRoundRect(162, 4, 152, 104, 4, ILI9341_WHITE);
+
+    if (saveLoad)
+    {
+        wave = sdcard.loadFile(saveFile, wave);
+        if (smoothOn)
+        {
+            wave.waveXstart = wave.previewWaveXstart;
+            wave.waveXend = wave.previewWaveXend;
+            for (int i = 0; i < 303; i++)
+            {
+                wave.pointUsed[i] = wave.previewPointUsed[i];
+                wave.waveY[i] = wave.previewWaveY[i];
+            }
+            wave = wave.smoothWave(wave, smoothLevel);
+            wave.previewWaveXstart = wave.smoothWaveXstart;
+            wave.previewWaveXend = wave.smoothWaveXend;
+            for (int i = 0; i < 303; i++)
+            {
+                wave.previewPointUsed[i] = wave.smoothPointUsed[i];
+                wave.previewWaveY[i] = wave.smoothWaveY[i];
+            }
+        }
+    }
+    else if (!saveLoad)
+    {
+        if (smoothOn)
+        {
+            wave.waveXstart = wave.customWaveXstart;
+            wave.waveXend = wave.customWaveXend;
+            for (int i = 0; i < 303; i++)
+            {
+                wave.pointUsed[i] = wave.customPointUsed[i];
+                wave.waveY[i] = wave.customWaveY[i];
+            }
+            wave = wave.smoothWave(wave, smoothLevel);
+            wave.previewWaveXstart = wave.smoothWaveXstart;
+            wave.previewWaveXend = wave.smoothWaveXend;
+            for (int i = 0; i < 303; i++)
+            {
+                wave.previewPointUsed[i] = wave.smoothPointUsed[i];
+                wave.previewWaveY[i] = wave.smoothWaveY[i];
+            }
+        }
+        else if (!smoothOn)
+        {
+            wave.previewWaveXstart = wave.customWaveXstart;
+            wave.previewWaveXend = wave.customWaveXend;
+            for (int i = 0; i < 303; i++)
+            {
+                wave.previewPointUsed[i] = wave.customPointUsed[i];
+                wave.previewWaveY[i] = wave.customWaveY[i];
+            }
+        }
+    }
+
+    int xprev = wave.previewWaveXstart;
+    for (int i = wave.previewWaveXstart + 4; i <= wave.previewWaveXend; i++)
+    {
+        if (wave.previewPointUsed[i])
+        {
+            tft->drawLine(((xprev / 2.0) + 163), (56 - wave.previewWaveY[xprev] / 2.0), ((i / 2.0) + 163), 56 - wave.previewWaveY[i] / 2.0, ILI9341_WHITE);
+            xprev = i;
+            i = i + 3;
+        }
+    }
+
+    /*
+    if (smoothOn)
+    {
+        wave.waveXstart = wave.customWaveXstart;
+        wave.waveXend = wave.customWaveXend;
+        for (int i = 0; i < 303; i++)
+        {
+            wave.pointUsed[i] = wave.customPointUsed[i];
+            wave.waveY[i] = wave.customWaveY[i];
+        }
+        wave = wave.smoothWave(wave, smoothLevel);
+        int xprev = wave.smoothWaveXstart;
+        for (int i = wave.smoothWaveXstart + 4; i <= wave.smoothWaveXend; i++)
+        {
+            if (wave.smoothPointUsed[i])
+            {
+                tft->drawLine(((xprev / 2.0) + 163), (56 - wave.smoothWaveY[xprev] / 2.0), ((i / 2.0) + 163), 56 - wave.smoothWaveY[i] / 2.0, ILI9341_WHITE);
+                xprev = i;
+                i = i + 3;
+            }
+        }
+    }
+    else if (!smoothOn)
+    {
+        int xprev = wave.customWaveXstart;
+        for (int i = wave.customWaveXstart + 4; i <= wave.customWaveXend; i++)
+        {
+            if (wave.customPointUsed[i])
+            {
+                tft->drawLine(((xprev / 2.0) + 163), (56 - wave.customWaveY[xprev] / 2.0), ((i / 2.0) + 163), 56 - wave.customWaveY[i] / 2.0, ILI9341_WHITE);
+                xprev = i;
+                i = i + 3;
+            }
+        }
+    }
+    */
+}
+
+void Display::saveWave(Wave wave, Memory sdcard)
+{
+    tft->fillRoundRect(6, 4, 152, 104, 4, ILI9341_LIGHTGREY);
+    
+    tft->fillRoundRect(6, 112, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(84, 112, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(162, 112, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(240, 112, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(6, 164, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(84, 164, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(162, 164, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(240, 164, 74, 48, 4, ILI9341_LIGHTGREY);
+
+    if (saveFile == 1)
+    {
+        tft->fillRoundRect(6, 112, 74, 48, 4, ILI9341_DARKGREY);
+    }
+    else if (saveFile == 2)
+    {
+        tft->fillRoundRect(84, 112, 74, 48, 4, ILI9341_DARKGREY);
+    }
+    else if (saveFile == 3)
+    {
+        tft->fillRoundRect(162, 112, 74, 48, 4, ILI9341_DARKGREY);
+    }
+    else if (saveFile == 4)
+    {
+        tft->fillRoundRect(240, 112, 74, 48, 4, ILI9341_DARKGREY);
+    }
+    else if (saveFile == 5)
+    {
+        tft->fillRoundRect(6, 164, 74, 48, 4, ILI9341_DARKGREY);
+    }
+    else if (saveFile == 6)
+    {
+        tft->fillRoundRect(84, 164, 74, 48, 4, ILI9341_DARKGREY);
+    }
+    else if (saveFile == 7)
+    {
+        tft->fillRoundRect(162, 164, 74, 48, 4, ILI9341_DARKGREY);
+    }
+    else if (saveFile == 8)
+    {
+        tft->fillRoundRect(240, 164, 74, 48, 4, ILI9341_DARKGREY);
+    }
+    
+    tft->drawRoundRect(6, 4, 152, 104, 4, ILI9341_WHITE);
+    
+    tft->drawRoundRect(6, 112, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(84, 112, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(162, 112, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(240, 112, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(6, 164, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(84, 164, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(162, 164, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(240, 164, 74, 48, 4, ILI9341_WHITE);
+
+    drawSave(wave, sdcard);
+    saveText();
+    bottomMenu4();
+}
+
 // Draw wave screen
 void Display::bottomMenu1()
 {
@@ -207,7 +392,14 @@ void Display::bottomMenu1()
         tft->setCursor(180, 116);
         if (smoothOn)
         {
-            tft->print("Smooth:       On");
+            if (smoothLevel == 1) 
+            {
+                tft->print("Smooth:      Low");
+            }
+            else if (smoothLevel == 2)
+            {
+                tft->print("Smooth:      High");
+            }
         }
         else if (!smoothOn)
         {
@@ -279,26 +471,74 @@ void Display::bottomMenu3()
     tft->setCursor(145, 222);
     tft->print("Reset");
 
-    if (envelopeOn) {
+    tft->setCursor(240, 222);
+    if (envelopeOn) 
+    {
         tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_DARKGREEN);
-        tft->setCursor(240, 222);
         tft->print("On");  
     }
-    else if (!envelopeOn) {
+    else if (!envelopeOn) 
+    {
         tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_LIGHTGREY);
-        tft->setCursor(240, 222);
         tft->print("Off");
     }
+}
+
+// Save screen
+void Display::bottomMenu4()
+{
+    // Button text bubble
+    tft->fillRoundRect(6, 217, 100, 20, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(110, 217, 100, 20, 4, ILI9341_MAGENTA);
+    tft->fillRoundRect(214, 217, 100, 20, 4, ILI9341_DARKGREEN);
+   
+    // Button text
+    tft->setFont(Arial_9);
+    tft->setTextColor(ILI9341_BLACK);
     
+    tft->setCursor(41, 222);
+    tft->print("Back");
+
+    tft->setCursor(145, 222);
+    if (saveLoad) 
+    {
+        tft->print("Load");  
+    }
+    else if (!saveLoad) 
+    {
+        tft->print("Save");
+    }
+
+    tft->setCursor(224, 222);
+    if (smoothLevel == 0) 
+    {
+        tft->print("Smooth:  Off");  
+    }
+    else if (smoothLevel == 1) 
+    {
+        tft->print("Smooth: Low");
+    }
+    else if (smoothLevel == 2) 
+    {
+        tft->print("Smooth: High");
+    }
 }
 
 void Display::drawWave(Wave wave)
 {
     drawGrid();
     int xprev = wave.waveXstart;
-    if (smoothOn)
+    int pointCount = 0;
+    for (int i = xprev; i <= wave.waveXend; i++)
     {
-        wave = wave.smoothWave(wave);
+        if (wave.pointUsed[i])
+        {
+            pointCount++;
+        }
+    }
+    if (smoothOn && pointCount > 5)
+    {
+        wave = wave.smoothWave(wave, smoothLevel);
         for (int i = wave.smoothWaveXstart + 2; i <= wave.smoothWaveXend; i++)
         {
             if (wave.smoothPointUsed[i])
@@ -309,7 +549,7 @@ void Display::drawWave(Wave wave)
             }
         }
     }
-    else if (!smoothOn)
+    else if (!smoothOn || pointCount <= 5)
     {
         for (int i = wave.waveXstart + 2; i <= wave.waveXend; i++)
         {
@@ -322,18 +562,6 @@ void Display::drawWave(Wave wave)
         }
     }
     bottomMenu1();
-    
-
-    /*
-    for (int i = 0; i < 303; i++)
-    {
-        if (wave.pointUsed[i])
-        {
-            tft->fillRoundRect((i + 10), (107 - wave.waveY[i]), 2, 2, 0, ILI9341_WHITE);
-            //tft->drawPixel((i + 11), (108 - wave.waveY[i]), ILI9341_WHITE);
-        }
-    }
-    */
 }
 
 void Display::waveIcons()
@@ -355,7 +583,6 @@ void Display::waveIcons()
     for (int i = 0; i < 35; i++)
     {
         tft->drawLine((220 + i), 56 + 20.0 * sin((2 * M_PI * i) / 36), 222 + i, 56 + 20.0 * sin((2 * M_PI * (i + 2)) / 36), ILI9341_BLACK);
-        //tft->drawPixel((220 + i), 56 + 20.0 * sin((2 * M_PI * i) / 36), ILI9341_BLACK);
         i++;
     }
     
@@ -444,7 +671,7 @@ void Display::envelope()
     bottomMenu3();
 }
 
-void Display::update(Wave wave)
+void Display::update(Wave wave, Memory sdcard)
 {
     tft->fillScreen(ILI9341_BLACK);
 
@@ -463,11 +690,15 @@ void Display::update(Wave wave)
     else if (menu == 3)
     {
         envelope();
+    }
+    else if (menu == 4)
+    {
+        saveWave(wave, sdcard);
     }
     tft->updateScreen();
 }
 
-void Display::changeScreen(Wave wave)
+void Display::changeScreen(Wave wave, Memory sdcard)
 {
     tft->fillScreen(ILI9341_BLACK);
 
@@ -486,6 +717,10 @@ void Display::changeScreen(Wave wave)
     else if (menu == 3)
     {
         envelope();
+    }
+    else if (menu == 4)
+    {
+        saveWave(wave, sdcard);
     }
     tft->updateScreen();
     delay(500);
@@ -523,7 +758,6 @@ void Display::onConfirm()
     tft->drawFastVLine(161, 109, 15, ILI9341_GREEN);
     tft->drawFastVLine(162, 109, 15, ILI9341_GREEN);
     tft->drawFastVLine(163, 109, 15, ILI9341_GREEN);
-
 }
 
 void Display::offConfirm()
@@ -543,7 +777,24 @@ void Display::offConfirm()
     tft->drawFastVLine(163, 109, 15, ILI9341_RED);
 }
 
-void Display::updateSet(Wave wave)
+void Display::saveConfirm()
+{
+    tft->fillRoundRect(106, 66, 112, 84, 6, ILI9341_WHITE);
+    
+    tft->setFont(Arial_16);
+    tft->setTextColor(ILI9341_BLACK);
+    tft->setCursor(131, 80);
+    tft->print("Saved");
+
+    tft->drawLine(140, 120, 155, 135, ILI9341_GREEN);
+    tft->drawLine(141, 120, 156, 135, ILI9341_GREEN);
+    tft->drawLine(142, 120, 157, 135, ILI9341_GREEN);
+    tft->drawLine(155, 135, 185, 110, ILI9341_GREEN);
+    tft->drawLine(156, 135, 186, 110, ILI9341_GREEN);
+    tft->drawLine(157, 135, 187, 110, ILI9341_GREEN);
+}
+
+void Display::updateSet(Wave wave, Memory sdcard)
 {
     tft->fillScreen(ILI9341_BLACK);
 
@@ -580,7 +831,11 @@ void Display::updateSet(Wave wave)
             offConfirm();
         }
     }
-
+    else if (menu == 4)
+        {
+            saveWave(wave, sdcard);
+            saveConfirm();
+        }
     tft->updateScreen();
     delay(1000);
 }

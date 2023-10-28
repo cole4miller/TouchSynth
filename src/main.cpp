@@ -1,10 +1,13 @@
 #include <Arduino.h>
 #include <Encoder.h>
+#include <SPI.h>
+#include <SD.h>
 #include "wave.h"
 #include "display.h"
 #include "sampler.h"
 #include "input.h"
 #include "touch.h"
+#include "memory.h"
 
 #include "XPT2046_Touchscreen.h"
 
@@ -27,7 +30,7 @@ Touch touch;
 #define CS_PIN  8
 XPT2046_Touchscreen ts(CS_PIN);
 
-
+Memory sdcard;
 
 Encoder knob(knob_in_1, knob_in_2);
 KnobIn knob_in;
@@ -63,6 +66,9 @@ void setup()
 
     wave.resetWave();
 
+    SD.begin(BUILTIN_SDCARD);
+    sdcard.readSD();
+
     setupADC(channel_1_pin, channel_2_pin);
 
     pinMode(knob_in_1, INPUT_PULLUP);
@@ -94,14 +100,14 @@ void loop()
         display->update(wave);
     }
     */
-    display->update(wave);
+    display->update(wave, sdcard);
     if (ts.touched()) {
         TS_Point p = ts.getPoint();
         display->xin = (p.x - 200.0) * (320.0 / 3500.0);
         display->yin = (p.y - 300.0) * (240.0 / 3550.0);
         touch.xin = (p.x - 200.0) * (320.0 / 3550.0);
         touch.yin = (p.y - 300.0) * (240.0 / 3550.0);
-        wave = touch.processTouch(display, wave);
+        wave = touch.processTouch(display, wave, sdcard);
     }
 
     currentButtonState = digitalRead(knob_push);
@@ -124,3 +130,4 @@ void loop()
     }
     lastButtonState = currentButtonState;
 }
+

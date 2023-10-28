@@ -30,9 +30,16 @@ class Wave
     bool selectPointUsed[303];
     int selectWaveY[303];
 
+    // preview wave forms on load screen
+    uint16_t previewWaveXstart = 302;  // x values from 0 to 302
+    uint16_t previewWaveXend = 0;
+    bool previewPointUsed[303];
+    int previewWaveY[303];
+
     void updateWave(uint16_t xin, uint16_t yin);
     void resetWave();
-    Wave smoothWave(Wave waveIn);
+    Wave smoothWave(Wave waveIn, uint16_t smoothLevel);
+    void confirmLoad();
     void squareWave();
     void sineWave();
     void triangleWave();
