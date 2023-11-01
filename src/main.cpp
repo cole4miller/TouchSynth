@@ -8,6 +8,8 @@
 #include "input.h"
 #include "touch.h"
 #include "memory.h"
+#include "oscillator.h"
+#include "notes.h"
 
 #include "XPT2046_Touchscreen.h"
 
@@ -32,6 +34,13 @@ XPT2046_Touchscreen ts(CS_PIN);
 
 Memory sdcard;
 
+Oscillator oscillator;
+int levelOut;
+long numPoints;
+
+IntervalTimer updateOut;
+IntervalTimer seqNoteChange;
+
 Encoder knob(knob_in_1, knob_in_2);
 KnobIn knob_in;
 
@@ -41,6 +50,28 @@ int lastButtonState = 0;
 int currentButtonState = 0;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 50;
+
+void changePWM()
+{
+    levelOut = oscillator.updateLevel(wave, display);
+    numPoints = oscillator.updateRate(wave, display);
+    //long newPeriod = (1.0 / (oscillator.freq * numPoints));
+    analogWrite(22, levelOut);
+    updateOut.update((1.0 / (oscillator.freq * numPoints)) * 100000.0);
+    //Serial.print("newPeriod:  ");
+    //Serial.println(newPeriod);
+    //Serial.print("levelOut:  ");
+    //Serial.println(levelOut);
+    //Serial.print("numPoints:  ");
+    //Serial.println(numPoints);
+}
+
+void changeSeqNote()
+{
+    oscillator.sequencer();
+    Serial.print("frequency:  ");
+    Serial.println(oscillator.freq);
+}
 
 void rotate()
 {
@@ -67,18 +98,26 @@ void setup()
     wave.resetWave();
 
     SD.begin(BUILTIN_SDCARD);
-    sdcard.readSD();
 
-    setupADC(channel_1_pin, channel_2_pin);
+    updateOut.priority(0);
+    updateOut.begin(changePWM, 1000000);
 
-    pinMode(knob_in_1, INPUT_PULLUP);
-    pinMode(knob_in_2, INPUT_PULLUP);
-    pinMode(knob_push, INPUT_PULLUP);
+    seqNoteChange.priority(1);
+    seqNoteChange.begin(changeSeqNote, ((60 / 100) * 1000000));
 
-    attachInterrupt(digitalPinToInterrupt(knob_in_2), rotate, CHANGE);
+    analogWriteFrequency(22, 585937.5);
+    analogWriteResolution(8);
 
-    knob_in.oldPosition = knob.read();
-    knob_in.newPosition = knob_in.oldPosition;
+    //setupADC(channel_1_pin, channel_2_pin);
+
+    //pinMode(knob_in_1, INPUT_PULLUP);
+    //pinMode(knob_in_2, INPUT_PULLUP);
+    //pinMode(knob_push, INPUT_PULLUP);
+
+    //attachInterrupt(digitalPinToInterrupt(knob_in_2), rotate, CHANGE);
+
+    //knob_in.oldPosition = knob.read();
+    //knob_in.newPosition = knob_in.oldPosition;
 }
 
 void loop()
@@ -110,6 +149,7 @@ void loop()
         wave = touch.processTouch(display, wave, sdcard);
     }
 
+    /*
     currentButtonState = digitalRead(knob_push);
 
     if (currentButtonState != lastButtonState)
@@ -129,5 +169,6 @@ void loop()
         }
     }
     lastButtonState = currentButtonState;
+    */
 }
 

@@ -126,6 +126,7 @@ void Display::miniWave(Wave wave)
 
 void Display::mainMenu(Wave wave)
 {
+    
     for (int i = 0; i < 240; i++)
     {
         tft->drawLine(40 + i, 10.0 * sin(2.0 * M_PI * i / 240.0) + 90, 40 + (i + 2), 10.0 * sin(2.0 * M_PI * (i + 2.0) / 240.0) + 15, ILI9341_WHITE);
@@ -135,6 +136,19 @@ void Display::mainMenu(Wave wave)
     tft->setCursor(45, 35);
     tft->setTextColor(ILI9341_BLACK);
     tft->print("TouchSynth");
+    
+
+   /*
+    for (int i = 0; i < 300; i++)
+    {
+        tft->drawLine(10 + i, 20 * sin(2.0 * M_PI * i / 600.0) * sin(2.0 * M_PI * i / 20.0) + 75, 10 + (i + 2), 20 * sin(2.0 * M_PI * i / 600.0) * sin(2.0 * M_PI * (i + 2.0) / 20.0) + 75, ILI9341_WHITE);
+        i++;
+    }
+    tft->setFont(Arial_32);
+    tft->setCursor(45, 10);
+    tft->setTextColor(ILI9341_WHITE);
+    tft->print("TouchSynth");
+    */
 
     tft->setTextColor(ILI9341_WHITE);
     tft->setFont(Arial_14);

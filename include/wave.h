@@ -36,6 +36,8 @@ class Wave
     bool previewPointUsed[303];
     int previewWaveY[303];
 
+    int bpm = 100;
+
     void updateWave(uint16_t xin, uint16_t yin);
     void resetWave();
     Wave smoothWave(Wave waveIn, uint16_t smoothLevel);
