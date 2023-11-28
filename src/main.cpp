@@ -57,7 +57,7 @@ void changePWM()
     numPoints = oscillator.updateRate(wave, display);
     //long newPeriod = (1.0 / (oscillator.freq * numPoints));
     analogWrite(22, levelOut);
-    updateOut.update((1.0 / (oscillator.freq * numPoints)) * 100000.0);
+    updateOut.update((1.0 / (oscillator.freq * numPoints)) * 1000000.0);
     //Serial.print("newPeriod:  ");
     //Serial.println(newPeriod);
     //Serial.print("levelOut:  ");
@@ -71,6 +71,7 @@ void changeSeqNote()
     oscillator.sequencer();
     Serial.print("frequency:  ");
     Serial.println(oscillator.freq);
+    seqNoteChange.update((60.0 / oscillator.seqBPM) * 1000000.0);
 }
 
 void rotate()
@@ -103,7 +104,7 @@ void setup()
     updateOut.begin(changePWM, 1000000);
 
     seqNoteChange.priority(1);
-    seqNoteChange.begin(changeSeqNote, ((60 / 100) * 1000000));
+    seqNoteChange.begin(changeSeqNote, ((60.0 / oscillator.seqBPM) * 1000000.0));
 
     analogWriteFrequency(22, 585937.5);
     analogWriteResolution(8);
