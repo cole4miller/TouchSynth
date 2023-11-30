@@ -69,8 +69,8 @@ void changePWM()
 void changeSeqNote()
 {
     oscillator.sequencer();
-    Serial.print("frequency:  ");
-    Serial.println(oscillator.freq);
+    //Serial.print("frequency:  ");
+    //Serial.println(oscillator.freq);
     seqNoteChange.update((60.0 / oscillator.seqBPM) * 1000000.0);
 }
 

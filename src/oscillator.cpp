@@ -59,7 +59,7 @@ void Oscillator::sequencer()
 {
     freq = seqNotes[seqStep];
     seqStep++;
-    if (seqStep >= 6)
+    if (seqStep >= numNotes)
     {
         seqStep = 0;
     }
