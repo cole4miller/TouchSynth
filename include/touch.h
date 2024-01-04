@@ -22,6 +22,7 @@ class Touch
     Wave bottomMenu2(Display * display, Wave wave, Memory sdcard);
     void bottomMenu3(Display * display, Wave wave, Memory sdcard);
     Wave bottomMenu4(Display * display, Wave wave, Memory sdcard);
+    void bottomMenu5(Display * display, Wave wave, Memory sdcard);
     Wave drawWave(Display * display, Wave wave, Memory sdcard);
     Wave selectWave(Display * display, Wave wave, Memory sdcard);
     void adjustAttack(Display * display);
@@ -30,4 +31,5 @@ class Touch
     void adjustRelease(Display * display);
     void envelope(Display * display, Wave wave, Memory sdcard);
     Wave saveWave(Display * display, Wave wave, Memory sdcard);
+    void sequencer(Display * display, Wave wave, Memory sdcard);
 };

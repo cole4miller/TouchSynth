@@ -152,15 +152,18 @@ void Display::mainMenu(Wave wave)
 
     tft->setTextColor(ILI9341_WHITE);
     tft->setFont(Arial_14);
-    tft->drawRoundRect(10, 108, 150, 32, 4, ILI9341_WHITE);
-    tft->setCursor(36, 116);
+    tft->drawRoundRect(10, 108, 150, 23, 4, ILI9341_WHITE);
+    tft->setCursor(36, 111);
     tft->print("Draw Wave");
-    tft->drawRoundRect(10, 144, 150, 32, 4, ILI9341_WHITE);
-    tft->setCursor(31, 152);
+    tft->drawRoundRect(10, 135, 150, 23, 4, ILI9341_WHITE);
+    tft->setCursor(31, 138);
     tft->print("Select Wave");
-    tft->drawRoundRect(10, 180, 150, 32, 4, ILI9341_WHITE);
-    tft->setCursor(45, 188);
+    tft->drawRoundRect(10, 162, 150, 23, 4, ILI9341_WHITE);
+    tft->setCursor(45, 165);
     tft->print("Envelope");
+    tft->drawRoundRect(10, 189, 150, 23, 4, ILI9341_WHITE);
+    tft->setCursor(43, 192);
+    tft->print("Sequencer");
 
     miniWave(wave);
 }
@@ -538,6 +541,36 @@ void Display::bottomMenu4()
     }
 }
 
+// Sequencer screen
+void Display::bottomMenu5()
+{
+    // Button text bubble
+    tft->fillRoundRect(32, 217, 84, 20, 2, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(120, 217, 84, 20, 2, ILI9341_MAGENTA);
+   
+    // Button text
+    tft->setFont(Arial_9);
+    tft->setTextColor(ILI9341_BLACK);
+    
+    tft->setCursor(58, 222);
+    tft->print("Back");
+
+    tft->setCursor(145, 222);
+    tft->print("Reset");
+
+    tft->setCursor(240, 222);
+    if (seqOn) 
+    {
+        tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_DARKGREEN);
+        tft->print("On");  
+    }
+    else if (!seqOn) 
+    {
+        tft->fillRoundRect(208, 217, 84, 20, 2, ILI9341_LIGHTGREY);
+        tft->print("Off");
+    }
+}
+
 void Display::drawWave(Wave wave)
 {
     drawGrid();
@@ -685,6 +718,235 @@ void Display::envelope()
     bottomMenu3();
 }
 
+void Display::stepDisplay()
+{
+    tft->fillRoundRect(11, 85, 16, 16, 4, ILI9341_BLACK);
+    tft->fillRoundRect(29, 85, 16, 16, 4, ILI9341_BLACK);
+    tft->fillRoundRect(47, 85, 16, 16, 4, ILI9341_BLACK);
+    tft->fillRoundRect(65, 85, 16, 16, 4, ILI9341_BLACK);
+    tft->fillRoundRect(83, 85, 16, 16, 4, ILI9341_BLACK);
+    tft->fillRoundRect(101, 85, 16, 16, 4, ILI9341_BLACK);
+    tft->fillRoundRect(119, 85, 16, 16, 4, ILI9341_BLACK);
+    tft->fillRoundRect(137, 85, 16, 16, 4, ILI9341_BLACK);
+    
+    if(seqStep == 0)
+    {
+        tft->fillRoundRect(13, 87, 12, 12, 4, ILI9341_WHITE);
+        tft->drawRoundRect(6, 112, 74, 48, 4, ILI9341_GREEN);
+        tft->drawRoundRect(7, 113, 72, 46, 4, ILI9341_GREEN);
+    }
+    else if(seqStep == 1)
+    {
+        tft->fillRoundRect(31, 87, 12, 12, 4, ILI9341_WHITE);
+        tft->drawRoundRect(84, 112, 74, 48, 4, ILI9341_GREEN);
+        tft->drawRoundRect(85, 113, 72, 46, 4, ILI9341_GREEN);
+    }
+    else if(seqStep == 2)
+    {
+        tft->fillRoundRect(49, 87, 12, 12, 4, ILI9341_WHITE);
+        tft->drawRoundRect(162, 112, 74, 48, 4, ILI9341_GREEN);
+        tft->drawRoundRect(163, 113, 72, 46, 4, ILI9341_GREEN);
+    }
+    else if(seqStep == 3)
+    {
+        tft->fillRoundRect(67, 87, 12, 12, 4, ILI9341_WHITE);
+        tft->drawRoundRect(240, 112, 74, 48, 4, ILI9341_GREEN);
+        tft->drawRoundRect(241, 113, 72, 46, 4, ILI9341_GREEN);
+    }
+    else if(seqStep == 4)
+    {
+        tft->fillRoundRect(85, 87, 12, 12, 4, ILI9341_WHITE);
+        tft->drawRoundRect(6, 164, 74, 48, 4, ILI9341_GREEN);
+        tft->drawRoundRect(7, 165, 72, 46, 4, ILI9341_GREEN);
+    }
+    else if(seqStep == 5)
+    {
+        tft->fillRoundRect(103, 87, 12, 12, 4, ILI9341_WHITE);
+        tft->drawRoundRect(84, 164, 74, 48, 4, ILI9341_GREEN);
+        tft->drawRoundRect(85, 165, 72, 46, 4, ILI9341_GREEN);
+    }
+    else if(seqStep == 6)
+    {
+        tft->fillRoundRect(121, 87, 12, 12, 4, ILI9341_WHITE);
+        tft->drawRoundRect(162, 164, 74, 48, 4, ILI9341_GREEN);
+        tft->drawRoundRect(163, 165, 72, 46, 4, ILI9341_GREEN);
+    }
+    else if(seqStep == 7)
+    {
+        tft->fillRoundRect(139, 87, 12, 12, 4, ILI9341_WHITE);
+        tft->drawRoundRect(240, 164, 74, 48, 4, ILI9341_GREEN);
+        tft->drawRoundRect(241, 165, 72, 46, 4, ILI9341_GREEN);
+    }
+}
+
+void Display::seqText()
+{
+    tft->setFont(Arial_18);
+    tft->setTextColor(ILI9341_BLACK);
+    tft->setCursor(82, 22, true);
+    tft->print("Sequencer");
+
+    tft->drawFastHLine(15, 40, 132, ILI9341_BLACK);
+    tft->drawFastHLine(15, 50, 132, ILI9341_BLACK);
+    tft->drawFastHLine(15, 60, 132, ILI9341_BLACK);
+    tft->drawFastHLine(15, 70, 132, ILI9341_BLACK);
+    tft->drawFastHLine(15, 80, 132, ILI9341_BLACK);
+    tft->drawFastVLine(15, 40, 40, ILI9341_BLACK);
+    tft->drawFastVLine(16, 40, 40, ILI9341_BLACK);
+    tft->drawFastVLine(19, 40, 40, ILI9341_BLACK);
+    tft->drawFastVLine(18, 40, 40, ILI9341_BLACK);
+    tft->drawFastVLine(82, 40, 40, ILI9341_BLACK);
+    tft->drawFastVLine(81, 40, 40, ILI9341_BLACK);
+
+    // First bar notes
+    tft->fillCircle(30, 65, 5, ILI9341_BLACK);
+    tft->drawFastVLine(34, 45, 20, ILI9341_BLACK);
+    tft->drawFastVLine(35, 45, 20, ILI9341_BLACK);
+    tft->fillCircle(43, 75, 5, ILI9341_BLACK);
+    tft->drawFastVLine(47, 55, 20, ILI9341_BLACK);
+    tft->drawFastVLine(48, 55, 20, ILI9341_BLACK);
+    tft->fillCircle(56, 60, 5, ILI9341_BLACK);
+    tft->drawFastVLine(60, 40, 20, ILI9341_BLACK);
+    tft->drawFastVLine(61, 40, 20, ILI9341_BLACK);
+    tft->fillCircle(69, 70, 5, ILI9341_BLACK);
+    tft->drawFastVLine(73, 50, 20, ILI9341_BLACK);
+    tft->drawFastVLine(74, 50, 20, ILI9341_BLACK);
+
+    // Second bar notes
+    tft->fillCircle(93, 55, 5, ILI9341_BLACK);
+    tft->drawFastVLine(97, 35, 20, ILI9341_BLACK);
+    tft->drawFastVLine(98, 35, 20, ILI9341_BLACK);
+    tft->fillCircle(106, 75, 5, ILI9341_BLACK);
+    tft->drawFastVLine(110, 55, 20, ILI9341_BLACK);
+    tft->drawFastVLine(111, 55, 20, ILI9341_BLACK);
+    tft->fillCircle(119, 60, 5, ILI9341_BLACK);
+    tft->drawFastVLine(123, 40, 20, ILI9341_BLACK);
+    tft->drawFastVLine(124, 40, 20, ILI9341_BLACK);
+    tft->fillCircle(132, 70, 5, ILI9341_BLACK);
+    tft->drawFastVLine(136, 50, 20, ILI9341_BLACK);
+    tft->drawFastVLine(137, 50, 20, ILI9341_BLACK);
+
+    tft->setFont(Arial_16);
+    tft->setCursor(238, 38, true);
+    tft->print("BPM");
+
+    tft->setFont(Arial_28);
+    tft->setCursor(238, 67, true);
+    tft->print(BPM);
+
+    tft->setFont(Arial_13);
+
+    tft->setCursor(43, 136, true);
+    //tft->print("1: ");
+    tft->print(noteArrayText[seqNoteArray[0]]);
+    
+    tft->setCursor(121, 136, true);
+    //tft->print("2: ");
+    tft->print(noteArrayText[seqNoteArray[1]]);
+
+    tft->setCursor(199, 136, true);
+    //tft->print("3: ");
+    tft->print(noteArrayText[seqNoteArray[2]]);
+
+    tft->setCursor(277, 136, true);
+    //tft->print("4: ");
+    tft->print(noteArrayText[seqNoteArray[3]]);
+
+    tft->setCursor(43, 188, true);
+    //tft->print("5: ");
+    tft->print(noteArrayText[seqNoteArray[4]]);
+
+    tft->setCursor(121, 188, true);
+    //tft->print("6: ");
+    tft->print(noteArrayText[seqNoteArray[5]]);
+
+    tft->setCursor(199, 188, true);
+    //tft->print("7: ");
+    tft->print(noteArrayText[seqNoteArray[6]]);
+
+    tft->setCursor(277, 188, true);
+    //tft->print("8: ");
+    tft->print(noteArrayText[seqNoteArray[7]]);
+}
+
+void Display::sequencer()
+{
+    tft->fillRoundRect(6, 4, 152, 104, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(162, 4, 152, 104, 4, ILI9341_LIGHTGREY);
+    
+    tft->fillRoundRect(6, 112, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(84, 112, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(162, 112, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(240, 112, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(6, 164, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(84, 164, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(162, 164, 74, 48, 4, ILI9341_LIGHTGREY);
+    tft->fillRoundRect(240, 164, 74, 48, 4, ILI9341_LIGHTGREY);
+
+    // Up Arrows
+    tft->fillRoundRect(163, 5, 150, 17, 4, ILI9341_DARKGREY);
+    
+    tft->fillRoundRect(7, 113, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(85, 113, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(163, 113, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(241, 113, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(7, 165, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(85, 165, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(163, 165, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(241, 165, 72, 12, 4, ILI9341_DARKGREY);
+
+    tft->fillTriangle(238, 8, 232, 19, 244, 19, ILI9341_BLACK);
+    
+    tft->fillTriangle(43, 115, 39, 123, 47, 123, ILI9341_BLACK);
+    tft->fillTriangle(121, 115, 117, 123, 125, 123, ILI9341_BLACK);
+    tft->fillTriangle(199, 115, 195, 123, 203, 123, ILI9341_BLACK);
+    tft->fillTriangle(277, 115, 273, 123, 281, 123, ILI9341_BLACK);
+    tft->fillTriangle(43, 167, 39, 175, 47, 175, ILI9341_BLACK);
+    tft->fillTriangle(121, 167, 117, 175, 125, 175, ILI9341_BLACK);
+    tft->fillTriangle(199, 167, 195, 175, 203, 175, ILI9341_BLACK);
+    tft->fillTriangle(277, 167, 273, 175, 281, 175, ILI9341_BLACK);
+
+    // Down Arrows
+    tft->fillRoundRect(163, 90, 150, 17, 4, ILI9341_DARKGREY);
+
+    tft->fillRoundRect(7, 147, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(85, 147, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(163, 147, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(241, 147, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(7, 199, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(85, 199, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(163, 199, 72, 12, 4, ILI9341_DARKGREY);
+    tft->fillRoundRect(241, 199, 72, 12, 4, ILI9341_DARKGREY);
+
+    tft->fillTriangle(238, 104, 232, 93, 244, 93, ILI9341_BLACK);
+
+    tft->fillTriangle(43, 157, 39, 149, 47, 149, ILI9341_BLACK);
+    tft->fillTriangle(121, 157, 117, 149, 125, 149, ILI9341_BLACK);
+    tft->fillTriangle(199, 157, 195, 149, 203, 149, ILI9341_BLACK);
+    tft->fillTriangle(277, 157, 273, 149, 281, 149, ILI9341_BLACK);
+    tft->fillTriangle(43, 209, 39, 201, 47, 201, ILI9341_BLACK);
+    tft->fillTriangle(121, 209, 117, 201, 125, 201, ILI9341_BLACK);
+    tft->fillTriangle(199, 209, 195, 201, 203, 201, ILI9341_BLACK);
+    tft->fillTriangle(277, 209, 273, 201, 281, 201, ILI9341_BLACK);
+    
+    // White button borders
+    tft->drawRoundRect(6, 4, 152, 104, 4, ILI9341_WHITE);
+    tft->drawRoundRect(162, 4, 152, 104, 4, ILI9341_WHITE);
+
+    tft->drawRoundRect(6, 112, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(84, 112, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(162, 112, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(240, 112, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(6, 164, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(84, 164, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(162, 164, 74, 48, 4, ILI9341_WHITE);
+    tft->drawRoundRect(240, 164, 74, 48, 4, ILI9341_WHITE);
+
+    seqText();
+    stepDisplay();
+    bottomMenu5();
+}
+
 void Display::update(Wave wave, Memory sdcard)
 {
     tft->fillScreen(ILI9341_BLACK);
@@ -708,6 +970,10 @@ void Display::update(Wave wave, Memory sdcard)
     else if (menu == 4)
     {
         saveWave(wave, sdcard);
+    }
+    else if (menu == 5)
+    {
+        sequencer();
     }
     tft->updateScreen();
 }
@@ -735,6 +1001,10 @@ void Display::changeScreen(Wave wave, Memory sdcard)
     else if (menu == 4)
     {
         saveWave(wave, sdcard);
+    }
+    else if (menu == 5)
+    {
+        sequencer();
     }
     tft->updateScreen();
     delay(500);
@@ -846,10 +1116,22 @@ void Display::updateSet(Wave wave, Memory sdcard)
         }
     }
     else if (menu == 4)
+    {
+        saveWave(wave, sdcard);
+        saveConfirm();
+    }
+    else if (menu == 5)
+    {
+        sequencer();
+        if (seqOn)
         {
-            saveWave(wave, sdcard);
-            saveConfirm();
+            onConfirm();
         }
+        else if (!seqOn)
+        {
+            offConfirm();
+        }
+    }
     tft->updateScreen();
     delay(1000);
 }

@@ -55,12 +55,21 @@ int Oscillator::updateRate(Wave wave, Display * display)
     return numPoints;
 }
 
-void Oscillator::sequencer()
+void Oscillator::sequencer(Display * display)
 {
+    freq = noteArray[seqNotes[display->seqStep]];
+    display->seqStep++;
+    if (display->seqStep >= 8)
+    {
+        display->seqStep = 0;
+    }
+
+    /*
     freq = seqNotes[seqStep];
     seqStep++;
     if (seqStep >= numNotes)
     {
         seqStep = 0;
     }
+    */
 }

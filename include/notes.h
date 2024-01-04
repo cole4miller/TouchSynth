@@ -1,5 +1,6 @@
 #pragma once
 #include <Arduino.h>
+#include <string>
 
 #define C1 32.703
 #define Db1 34.648
@@ -12,7 +13,7 @@
 #define Ab1 51.913
 #define A1 55.000
 #define Bb1 58.270
-//#define B1 61.735
+#define B1note 61.735
 
 #define C2 65.406
 #define Db2 69.296

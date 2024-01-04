@@ -2,19 +2,24 @@
 
 void Touch::mainMenu(Display * display, Wave wave, Memory sdcard)
 {
-    if (xin > 10 && xin < 160 && yin > 108 && yin < 140)
+    if (xin > 10 && xin < 160 && yin > 108 && yin < 131)
     {
         display->menu = 1;
         display->changeScreen(wave, sdcard);
     }
-    else if (xin > 10 && xin < 160 && yin > 144 && yin < 176)
+    else if (xin > 10 && xin < 160 && yin > 135 && yin < 158)
     {
         display->menu = 2;
         display->changeScreen(wave, sdcard);
     }
-    else if (xin > 10 && xin < 160 && yin > 180 && yin < 212)
+    else if (xin > 10 && xin < 160 && yin > 162 && yin < 185)
     {
         display->menu = 3;
+        display->changeScreen(wave, sdcard);
+    }
+    else if (xin > 10 && xin < 160 && yin > 189 && yin < 212)
+    {
+        display->menu = 5;
         display->changeScreen(wave, sdcard);
     }
 }
@@ -171,6 +176,35 @@ Wave Touch::bottomMenu4(Display * display, Wave wave, Memory sdcard)
             }
     }
     return wave;
+}
+
+void Touch::bottomMenu5(Display * display, Wave wave, Memory sdcard)
+{
+    if (xin >= 32 && xin <= 116 && yin > 217 && yin < 237)
+    {
+        display->menu = 0;
+        display->changeScreen(wave, sdcard);
+    }
+    else if (xin >= 120 && xin <= 204 && yin > 217 && yin < 237)
+    {
+        for(int i = 0; i < 8; i++)
+        {
+            display->seqNoteArray[i] = 45;
+        }
+        display->BPM = 80;
+        display->changeScreen(wave, sdcard);
+        
+    }
+    else if (xin >= 208 && xin <= 292 && yin > 217 && yin < 237)
+    {
+        if (display->seqOn) {
+            display->seqOn = false;  
+        }
+        else if (!display->seqOn) {
+            display->seqOn = true;
+        }
+        display->updateSet(wave, sdcard);
+    }
 }
 
 Wave Touch::drawWave(Display * display, Wave wave, Memory sdcard)
@@ -392,6 +426,142 @@ Wave Touch::saveWave(Display * display, Wave wave, Memory sdcard)
     return wave;
 }
 
+void Touch::sequencer(Display * display, Wave wave, Memory sdcard)
+{
+    // Up arrows
+    if (xin >= 162 && xin <= 314 && yin >= 4 && yin <= 22)
+    {
+        if(display->BPM < 200) 
+        {
+            display->BPM++;
+        }
+    }
+    else if (xin >= 6 && xin <= 80 && yin >= 112 && yin <= 123)
+    {
+        if(display->seqNoteArray[0] < 84)
+        {
+            display->seqNoteArray[0]++;
+        }
+    }
+    else if (xin >= 84 && xin <= 158 && yin >= 112 && yin <= 123)
+    {
+        if(display->seqNoteArray[1] < 84)
+        {
+            display->seqNoteArray[1]++;
+        }
+    }
+    else if (xin >= 162 && xin <= 236 && yin >= 112 && yin <= 123)
+    {
+        if(display->seqNoteArray[2] < 84)
+        {
+            display->seqNoteArray[2]++;
+        }
+    }
+    else if (xin >= 240 && xin <= 314 && yin >= 112 && yin <= 123)
+    {
+        if(display->seqNoteArray[3] < 84)
+        {
+            display->seqNoteArray[3]++;
+        }
+    }
+    else if (xin >= 6 && xin <= 80 && yin >= 164 && yin <= 175)
+    {
+        if(display->seqNoteArray[4] < 84)
+        {
+            display->seqNoteArray[4]++;
+        }
+    }
+    else if (xin >= 84 && xin <= 158 && yin >= 164 && yin <= 175)
+    {
+        if(display->seqNoteArray[5] < 84)
+        {
+            display->seqNoteArray[5]++;
+        }
+    }
+    else if (xin >= 162 && xin <= 236 && yin >= 164 && yin <= 175)
+    {
+        if(display->seqNoteArray[6] < 84)
+        {
+            display->seqNoteArray[6]++;
+        }
+    }
+    else if (xin >= 240 && xin <= 314 && yin >= 164 && yin <= 175)
+    {
+        if(display->seqNoteArray[7] < 84)
+        {
+            display->seqNoteArray[7]++;
+        }
+    }
+
+    // Down Arrows
+    else if (xin >= 162 && xin <= 314 && yin >= 90 && yin <= 108)
+    {
+        if(display->BPM > 1)
+        {
+            display->BPM--;
+        }
+    }
+    else if (xin >= 6 && xin <= 80 && yin >= 149 && yin <= 160)
+    {
+        if(display->seqNoteArray[0] > 0)
+        {
+            display->seqNoteArray[0]--;
+        }
+    }
+    else if (xin >= 84 && xin <= 158 && yin >= 149 && yin <= 160)
+    {
+        if(display->seqNoteArray[1] > 0)
+        {
+            display->seqNoteArray[1]--;
+        }
+    }
+    else if (xin >= 162 && xin <= 236 && yin >= 149 && yin <= 160)
+    {
+        if(display->seqNoteArray[2] > 0)
+        {
+            display->seqNoteArray[2]--;
+        }
+    }
+    else if (xin >= 240 && xin <= 314 && yin >= 149 && yin <= 160)
+    {
+        if(display->seqNoteArray[3] > 0)
+        {
+            display->seqNoteArray[3]--;
+        }
+    }
+    else if (xin >= 6 && xin <= 80 && yin >= 201 && yin <= 212)
+    {
+        if(display->seqNoteArray[4] > 0)
+        {
+            display->seqNoteArray[4]--;
+        }
+    }
+    else if (xin >= 84 && xin <= 158 && yin >= 201 && yin <= 212)
+    {
+        if(display->seqNoteArray[5] > 0)
+        {
+            display->seqNoteArray[5]--;
+        }
+    }
+    else if (xin >= 162 && xin <= 236 && yin >= 201 && yin <= 212)
+    {
+        if(display->seqNoteArray[6] > 0)
+        {
+            display->seqNoteArray[6]--;
+        }
+    }
+    else if (xin >= 240 && xin <= 314 && yin >= 201 && yin <= 212)
+    {
+        if(display->seqNoteArray[7] > 0)
+        {
+            display->seqNoteArray[7]--;
+        }
+    }
+
+    bottomMenu5(display, wave, sdcard);
+    delay(100);
+}
+
 Wave Touch::processTouch(Display * display, Wave wave, Memory sdcard)
 {
     if (display->menu == 0)
@@ -413,6 +583,10 @@ Wave Touch::processTouch(Display * display, Wave wave, Memory sdcard)
     else if (display->menu == 4)
     {
         wave = saveWave(display, wave, sdcard);
+    }
+    else if (display->menu == 5)
+    {
+        sequencer(display, wave, sdcard);
     }
     return wave;
 }

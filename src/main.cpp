@@ -68,10 +68,16 @@ void changePWM()
 
 void changeSeqNote()
 {
-    oscillator.sequencer();
-    //Serial.print("frequency:  ");
-    //Serial.println(oscillator.freq);
-    seqNoteChange.update((60.0 / oscillator.seqBPM) * 1000000.0);
+    if (display->seqOn)
+    {
+        oscillator.freq = display->noteArray[display->seqNoteArray[display->seqStep]];
+    }
+    seqNoteChange.update((60.0 / (display->BPM * 4)) * 1000000.0);
+    display->seqStep++;
+    if (display->seqStep >= 8)
+    {
+        display->seqStep = 0;
+    }
 }
 
 void rotate()
@@ -104,7 +110,7 @@ void setup()
     updateOut.begin(changePWM, 1000000);
 
     seqNoteChange.priority(1);
-    seqNoteChange.begin(changeSeqNote, ((60.0 / oscillator.seqBPM) * 1000000.0));
+    seqNoteChange.begin(changeSeqNote, ((60.0 / display->BPM) * 1000000.0));
 
     analogWriteFrequency(22, 585937.5);
     analogWriteResolution(8);
@@ -148,6 +154,10 @@ void loop()
         touch.xin = (p.x - 200.0) * (320.0 / 3550.0);
         touch.yin = (p.y - 300.0) * (240.0 / 3550.0);
         wave = touch.processTouch(display, wave, sdcard);
+        for(int i = 0; i < 8; i++)
+        {
+            oscillator.seqNotes[i] = display->seqNoteArray[i];
+        }
     }
 
     /*
