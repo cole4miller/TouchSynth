@@ -7,6 +7,7 @@
 #include "ILI9341_t3n_font_Arial.h"
 #include "display.h"
 #include "notes.h"
+#include "sampler.h"
 
 
 #define TFT_DC 9
@@ -27,31 +28,47 @@ public:
     void update(Wave wave, Memory sdcard);
     void changeScreen(Wave wave, Memory sdcard);
     void updateSet(Wave wave, Memory sdcard);
+    int checkTrig();
+    double getFreq(int sample);
+
+    double testFreq[8] = {C1, C2, C3, C4, C5, C4, C3, C2};
+    int testFreqIndex = 0;
+
+    int adctotal = 0;
+    int adccount = 0;
 
     uint16_t menu = 0;              // 0 = Main menu, 1 = Draw Wave
-                                    // 2 = Select Wave, 3 = Envelope
-                                    // 4 - Save
-    uint16_t xin = 0;               // Values 0 - 319
-    uint16_t yin = 0;               // Values 0 - 239
-    uint16_t attack = 75;           // Values 0 - 150
-    uint16_t decay = 75;            // Values 0 - 150
-    uint16_t sustain = 75;          // Values 0 - 150
-    uint16_t release = 75;          // Values 0 - 150
+                                    // 2 = Select Wave, 3 = Settings
+                                    // 4 - Save/Load, 5 - Sequencer
+                                    // 6 = Tune input, 7 = Trigger Sens
+                                    // 8 = Credits, 9 = Seq. Gate
+    
     bool drawWaveOn = false;        // Activates custom wave form
     bool waveOptions = false;
-    bool smoothOn = false;          // Custom wvae for smoothing effect
-    uint16_t smoothLevel = 0;
-    bool selectWaveOn = false;      // Activates preset wave form
-    bool envelopeOn = false;        // Activates digital envelope
+    bool smoothOn = true;          // Custom wave for smoothing effect
+    uint16_t smoothLevel = 1;
+    bool selectWaveOn = true;      // Activates preset wave form
     uint16_t selectWaveType = 0;    // 0 = square, 1 = sine
                                     // 2 = triangle, 3 = sawtooth
+
+    int pitchTune = 100;            // 0 - 200
+    int trigLevel = 100;            // 0 - 200
+
     bool seqOn = false;
     int seqNoteArray[8] = {45, 45, 45, 45, 45, 45, 45, 45}; // element values 0 - 84
     int seqStep = 0;
+    bool seqGateOn = false;
+    float seqGate = 0.499;            // Sequencer gate duty cycle (0.1 - 0.9)
 
     uint16_t saveFile = 0;
     bool saveLoad;                  // 0 = save, 1 = load
     int BPM = 80;
+
+    bool lightDarkMode = 0;         // 0 = Dark, 1 = Light
+    uint16_t backgroundColor = 0x0000;  // Default dark mode (black)
+    uint16_t secondColor = 0x7BEF;      // Default dark mode (dark grey)
+    uint16_t thirdColor = 0xC618;       // Default dark mode (light grey)
+    uint16_t textColor = 0xFFFF;        // Default dark mode (white)
 
     double noteArray[85] = {
     C1, Db1, D1, Eb1, E1, F1, Gb1, G1, Ab1, A1, Bb1, B1note, 
@@ -73,12 +90,11 @@ public:
 
 private:
     void drawGrid();
-    void miniWave(Wave wave);
     void mainMenu(Wave wave);
     void saveText();
     void drawSave(Wave wave, Memory sdcard);
     void saveWave(Wave wave, Memory sdcard);
-    void bottomMenu1();
+    void bottomMenu1(Wave wave);
     void bottomMenu2();
     void bottomMenu3();
     void bottomMenu4();
@@ -86,11 +102,13 @@ private:
     void drawWave(Wave wave);
     void waveIcons();
     void selectWave(Wave wave);
-    void ADSRfaders();
-    void envelope();
-    void stepDisplay();
+    void settings();
+    void tuneInput();
+    void triggerSens();
+    void credits();
     void seqText();
     void sequencer();
+    void seqGateAdjust();
     void setConfirm();
     void onConfirm();
     void offConfirm();

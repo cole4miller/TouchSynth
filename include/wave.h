@@ -36,7 +36,9 @@ class Wave
     bool previewPointUsed[303];
     int previewWaveY[303];
 
-    int bpm = 100;
+    //int bpm = 100;
+    bool drawLR = true;     // 0 - bidirectional drawing
+                            // 1 - left to right drawing
 
     void updateWave(uint16_t xin, uint16_t yin);
     void resetWave();

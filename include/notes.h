@@ -2,31 +2,31 @@
 #include <Arduino.h>
 #include <string>
 
-#define C1 32.703
-#define Db1 34.648
-#define D1 36.708
-#define Eb1 38.891
-#define E1 41.203
-#define F1 43.654
-#define Gb1 46.249
-#define G1 48.999
-#define Ab1 51.913
-#define A1 55.000
-#define Bb1 58.270
-#define B1note 61.735
+#define C1 32.703       // 0
+#define Db1 34.648      // 12
+#define D1 36.708       // 31
+#define Eb1 38.891      // 44
+#define E1 41.203       // 58
+#define F1 43.654       // 72
+#define Gb1 46.249      // 85
+#define G1 48.999       // 98
+#define Ab1 51.913      // 106
+#define A1 55.000       // 124
+#define Bb1 58.270      // 137
+#define B1note 61.735   // 151
 
-#define C2 65.406
-#define Db2 69.296
-#define D2 73.416
-#define Eb2 77.782
-#define E2 82.407
-#define F2 87.307
-#define Gb2 92.499
-#define G2 97.999
-#define Ab2 103.826
-#define A2 110.000
-#define Bb2 116.541
-#define B2 123.471
+#define C2 65.406       // 164
+#define Db2 69.296      // 178
+#define D2 73.416       // 191
+#define Eb2 77.782      // 205
+#define E2 82.407       // 217
+#define F2 87.307       // 235
+#define Gb2 92.499      //
+#define G2 97.999       //
+#define Ab2 103.826     //
+#define A2 110.000      //
+#define Bb2 116.541     //
+#define B2 123.471      //
 
 #define C3 130.813
 #define Db3 138.591

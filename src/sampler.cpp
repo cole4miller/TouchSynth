@@ -59,8 +59,9 @@ void processBuffers(int16_t *out1, int16_t *out2)
     //convert raw data to millivolts
     for (uint16_t i = 0; i < BUFFER_SIZE; i++)
     {
-        out1[i] = ((int)in0[i] - 2048) * ((3.3 * 1000) / 4096) - 30;    // Shifted value down 30 to center AC coupled wave
-        out2[i] = ((int)in1[i] - 2048) * ((3.3 * 1000) / 4096) - 30;    // Shifted value down 30 to center AC coupled wave
+        //out1[i] = 1650 - (((int)in0[i] - 2048) * ((3.3 * 1000) / 4096) - 30);    // Shifted value down 30 to center AC coupled wave
+        out1[i] = (((int)in0[i]) * ((3.3 * 1000) / 4096));    // Shifted value down 30 to center AC coupled wave
+        out2[i] = (((int)in1[i] - 2048) * ((3.3 * 1000) / 4096)) - 24;    // Shifted value down 30 to center AC coupled wave
     }
 
     adc0_abdma.clearInterrupt();

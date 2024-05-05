@@ -2,17 +2,33 @@
 
 void Wave::updateWave(uint16_t xin, uint16_t yin)
 {
-    waveY[xin - 11] = (108 - yin);
-    pointUsed[xin - 11] = true;
-    
-    if ((xin - 11) < waveXstart)
+    if (!drawLR)
     {
-        waveXstart = xin - 11;
-    }
+        waveY[xin - 11] = (108 - yin);
+        pointUsed[xin - 11] = true;
+        
+        if ((xin - 11) < waveXstart)
+        {
+            waveXstart = xin - 11;
+        }
 
-    if ((xin - 11) > waveXend)
+        if ((xin - 11) > waveXend)
+        {
+            waveXend = xin - 11;
+        }
+    }
+    else
     {
-        waveXend = xin - 11;
+        if ((xin - 11) > waveXend)
+        {
+            if ((xin - 11) < waveXstart)
+            {
+                waveXstart = xin - 11;
+            } 
+            waveXend = xin - 11;
+            waveY[xin - 11] = (108 - yin);
+            pointUsed[xin - 11] = true;
+        }
     }
 }
 
@@ -21,10 +37,14 @@ void Wave::resetWave()
     for (int i = 0; i < 303; i++)
     {
         waveY[i] = 0;
+        smoothWaveY[i] = 0;
         pointUsed[i] = false;
+        smoothPointUsed[i] = false;
     }
     waveXstart = 302;  
     waveXend = 0;
+    smoothWaveXstart = 302;  
+    smoothWaveXend = 0;
 }
 
 Wave Wave::smoothWave(Wave waveIn, uint16_t smoothLevel)

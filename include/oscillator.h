@@ -3,19 +3,21 @@
 #include "display.h"
 #include "wave.h"
 #include "notes.h"
+#include "math.h"
 
 class Wave;
-
+class Display;
 class Oscillator 
 {
     public:
-    double freq = C5;
+    
+    double freq = C8;
     long numPoints = 1.0;
     int levelOut = 0;
     int currentStep = 0;
     int nextStep = 1;
     int seqStep = 0;
-    short seqBPM = 75.0;
+    //short seqBPM = 75.0;
     //double seqNotes[32] = {Eb5, Bb4, G4, Eb5, Bb4, G4, Eb5, Bb4, 
     //                       Db5, Bb4, F4, Db5, Bb4, F4, Db5, Bb4, 
     //                       Db5, Bb4, F4, Db5, Bb4, F4, Db5, Bb4,  
@@ -23,6 +25,14 @@ class Oscillator
     //int numNotes = 32;
 
     int seqNotes[8] = {45, 45, 45, 45, 45, 45, 45, 45};
+    uint16_t bufferOut[3100] = { };     // Length based on 10 us update time
+    uint16_t bufferSteps = 5;
+    int16_t updateTime = 10;
+
+    uint16_t outWaveXstart = 302;  // x values from 0 to 302
+    uint16_t outWaveXend = 0;
+    bool outPointUsed[303];        // Bool for whether each x value is drawn
+    int outWaveY[303];             // Wave y values array, -103 <= y <= 103
 
     double noteArray[85] = {
     C1, Db1, D1, Eb1, E1, F1, Gb1, G1, Ab1, A1, Bb1, B1note, 
@@ -35,6 +45,8 @@ class Oscillator
 
     int updateLevel(Wave wave, Display * display);
     int updateRate(Wave wave, Display * display);
+    void fillWave(Wave wave, Display * display);
+    void fillBuffer(Wave wave, Display * display);
 
     void sequencer(Display * display);
 
