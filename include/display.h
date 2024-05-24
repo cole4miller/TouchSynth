@@ -55,7 +55,7 @@ public:
     int trigLevel = 100;            // 0 - 200
 
     bool seqOn = false;
-    int seqNoteArray[8] = {45, 45, 45, 45, 45, 45, 45, 45}; // element values 0 - 84
+    int seqNoteArray[8] = {24, 24, 24, 24, 24, 24, 24, 24}; // element values 0 - 84
     int seqStep = 0;
     bool seqGateOn = false;
     float seqGate = 0.499;            // Sequencer gate duty cycle (0.1 - 0.9)

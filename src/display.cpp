@@ -23,7 +23,7 @@ int Display::checkTrig()
         // 5V input ~825 mV from ADC, so 600 mV gives some leeway
         // if (data[0][i] > (600 * trigLevel / 100) && data[0][i-1] < (600 * trigLevel / 100))  
         
-        if (data[0][i] > (600 * trigLevel / 100)) 
+        if (data[0][i] > (2000 * (200 - trigLevel) / 100)) 
         {                       
             count++;
             //return i;
@@ -38,7 +38,24 @@ int Display::checkTrig()
 
 double Display::getFreq(int sample)
 {
-    int noteIndex = round((data[1][sample] - 7) / -13.8);
+    // average mV across buffer samples
+    
+    int16_t avgSample;
+    int32_t ADCtotal = 0;
+
+    for (int i = 0; i < 100; i++)
+    {
+        ADCtotal += data[1][sample - i];
+    }
+    avgSample = ADCtotal / 100;
+    int noteIndex = round(float((avgSample - (pitchTune - 100))* -0.0731) - 0.151);
+
+    // pre average working eqn
+    //int noteIndex = round(float((data[1][sample] + (pitchTune - 100))* -0.0731) - 0.151);
+    
+    
+    
+    //int noteIndex = round((data[1][sample] + 2.08) / -13.7);
     //int noteIndex = round((data[1][sample] - 1650.0) * ((16.5 + 84.5) / 16.5) / 83.3333) - 1;
     adccount++;
     adctotal = adctotal + data[1][sample];

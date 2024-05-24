@@ -3,24 +3,24 @@
 #include <string>
 
 #define C1 32.703       // 0
-#define Db1 34.648      // 12
-#define D1 36.708       // 31
-#define Eb1 38.891      // 44
-#define E1 41.203       // 58
-#define F1 43.654       // 72
-#define Gb1 46.249      // 85
-#define G1 48.999       // 98
-#define Ab1 51.913      // 106
-#define A1 55.000       // 124
-#define Bb1 58.270      // 137
-#define B1note 61.735   // 151
+#define Db1 34.648      // -11 (-12)
+#define D1 36.708       // -25 (-26)
+#define Eb1 38.891      // -43
+#define E1 41.203       // -58
+#define F1 43.654       // -72
+#define Gb1 46.249      // -85
+#define G1 48.999       // -98
+#define Ab1 51.913      // -111 (-112)
+#define A1 55.000       // -124
+#define Bb1 58.270      // -138
+#define B1note 61.735   // -151
 
-#define C2 65.406       // 164
-#define Db2 69.296      // 178
-#define D2 73.416       // 191
-#define Eb2 77.782      // 205
-#define E2 82.407       // 217
-#define F2 87.307       // 235
+#define C2 65.406       // -165
+#define Db2 69.296      // 
+#define D2 73.416       // 
+#define Eb2 77.782      // 
+#define E2 82.407       // 
+#define F2 87.307       // 
 #define Gb2 92.499      //
 #define G2 97.999       //
 #define Ab2 103.826     //
@@ -28,8 +28,8 @@
 #define Bb2 116.541     //
 #define B2 123.471      //
 
-#define C3 130.813
-#define Db3 138.591
+#define C3 130.813      // -331 (-332)
+#define Db3 138.591     // 
 #define D3 146.832
 #define Eb3 155.564
 #define E3 164.814
@@ -41,8 +41,8 @@
 #define Bb3 233.082
 #define B3 246.942
 
-#define C4 261.626
-#define Db4 277.183
+#define C4 261.626      // -497
+#define Db4 277.183     
 #define D4 293.665
 #define Eb4 311.127
 #define E4 329.628
@@ -54,7 +54,7 @@
 #define Bb4 466.164
 #define B4 493.883
 
-#define C5 523.251
+#define C5 523.251      // -663 (-662)    
 #define Db5 554.365
 #define D5 587.330
 #define Eb5 622.254
@@ -67,7 +67,7 @@
 #define Bb5 932.328
 #define B5 987.767
 
-#define C6 1046.502
+#define C6 1046.502     // -822
 #define Db6 1108.731
 #define D6 1174.659
 #define Eb6 1244.508
@@ -80,7 +80,7 @@
 #define Bb6 1864.655
 #define B6 1975.533
 
-#define C7 2093.005
+#define C7 2093.005     // -983 (-984)
 #define Db7 2217.461
 #define D7 2349.318
 #define Eb7 2489.016
@@ -93,4 +93,4 @@
 #define Bb7 3729.310
 #define B7 3951.066
 
-#define C8 4186.009
+#define C8 4186.009     // -1151
